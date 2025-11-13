@@ -575,6 +575,7 @@
     <script>
       layout_change('light');
     </script>
+<<<<<<< HEAD
 
     <script>
       layout_sidebar_change('light');
@@ -604,3 +605,5 @@
   </body>
   <!-- [Body] end -->
 </html>
+
+
