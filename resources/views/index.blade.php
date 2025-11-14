@@ -3,7 +3,7 @@
   <!-- [Head] start -->
 
   <head>
-    <title>Home | Gradient Able Dashboard Template</title>
+    <title>Sistem Surat JBG</title>
     <!-- [Meta] -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
@@ -56,7 +56,7 @@
     <div class="m-header">
   <a href="/gradient/dashboard/index.html" class="b-brand text-primary">
     <!-- ========   Change your logo from here   ============ -->
-    <img src="/gradient/assets/images/logojbg.png" alt="My Company Logo" class="logo-lg" style="height: 100px; width: auto;" />
+    <img src="/gradient/assets/images/logojbg2.png" alt="My Company Logo" class="logo-lg" style="height: 50px; width: auto;" />
   </a>
 </div>
     <div class="navbar-content">
@@ -78,7 +78,22 @@
                         <span class="pc-mtext">Surat Masuk</span>
                     </a>
                 </li>
-                
+        <li class="pc-item">
+            <a href="{{ url('/surat-keluar') }}" class="pc-link">
+                <span class="pc-micon">
+                    <i class="ti ti-send"></i> <!-- Icon surat keluar -->
+                </span>
+                <span class="pc-mtext">Surat Keluar</span>
+            </a>
+        </li>
+                <li class="pc-item">
+            <a href="{{ url('/agenda') }}" class="pc-link">
+                <span class="pc-micon">
+                    <i class="ti ti-calendar"></i> <!-- Icon kalender/agenda -->
+                </span>
+                <span class="pc-mtext">Agenda</span>
+            </a>
+        </li>
         <li class="pc-item pc-caption">
           <label>UI Components</label>
           <i class="ph ph-compass-tool"></i>
@@ -186,7 +201,7 @@
   <div class="m-header">
     <a href="/gradient/dashboard/index.html" class="b-brand text-primary">
       <!-- ========   Change your logo from here   ============ -->
-      <img src="/gradient/assets/images/logojbg.png" alt="My Company Logo" class="logo-lg" style="height: 100px; width: auto;" />
+      <img src="/gradient/assets/images/logojbg2.png" alt="My Company Logo" class="logo-lg" style="height: 50px; width: auto;" />
         </a>
   </div>
   <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
