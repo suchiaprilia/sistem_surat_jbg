@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SuratMasukController;
-                            
+
 Route::get('/', function () {
     return view('index'); // <-- Pastikan ini sesuai nama file: index.blade.php
 });
@@ -15,4 +15,5 @@ Route::get('/dashboard', function () {
 Route::get('/test', function () {
     return view('test');
 });
+
 Route::resource('surat-masuk', SuratMasukController::class);

@@ -69,7 +69,16 @@
             ><span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span></a
           >
         </li>
-
+ <!-- Di sini kita tambahkan menu "Surat Masuk" -->
+                <li class="pc-item">
+                    <a href="{{ url('/surat-masuk') }}" class="pc-link">
+                        <span class="pc-micon">
+                            <i class="ti ti-mail"></i> <!-- Icon surat -->
+                        </span>
+                        <span class="pc-mtext">Surat Masuk</span>
+                    </a>
+                </li>
+                
         <li class="pc-item pc-caption">
           <label>UI Components</label>
           <i class="ph ph-compass-tool"></i>
