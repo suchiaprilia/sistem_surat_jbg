@@ -77,7 +77,7 @@
         <li class="pc-item">
           <a href="/gradient/elements/bc_typography.html" class="pc-link">
             <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
-            <span class="pc-mtext">Typography</span>
+            <span class="pc-mtext">surat masuk</span>
           </a>
         </li>
         <li class="pc-item">
