@@ -7,16 +7,16 @@
     <style>
         body { font-family: Arial; background: #f4f6f9; padding: 30px; }
         .container { background: #fff; padding: 20px; border-radius: 10px; }
+        .top-menu { display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 6px 10px; background: #3498db; color:white; border-radius: 5px; text-decoration:none; }
+        .btn-green { background: #27ae60; }
+        .btn-danger { background: #e74c3c; color:white; border-radius: 5px; padding:6px 10px; border:none; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border-bottom: 1px solid #ddd; }
         th { background: #3498db; color: white; }
-        .btn { padding: 6px 10px; background: #3498db; color:white; border-radius: 5px; text-decoration:none; }
-        .btn-danger { background: #e74c3c; }
         .alert { padding: 10px; background:#e8ffe8; color:green; margin-top:10px; }
-        form { margin-top: 20px; }
-        input, select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; }
-        h2 { color:#34495e; }
         .form-box { background:#f9f9f9; padding:20px; border-radius:10px; margin-top:20px; }
+        input { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; }
     </style>
 </head>
 
@@ -24,7 +24,13 @@
 
 <div class="container">
 
-    <h2>📤 Surat Keluar</h2>
+    <div class="top-menu">
+        <h2>📤 Surat Keluar</h2>
+
+        <!-- Tombol kembali ke dashboard -->
+        <a href="/" class="btn btn-green">← Kembali ke Dashboard</a>
+    </div>
+
 
     @if(session('success'))
         <p class="alert">{{ session('success') }}</p>
@@ -61,13 +67,9 @@
             <input type="date" name="date"
                 value="{{ $editData->date ?? '' }}" required>
 
-            <label>ID User</label>
-            <input type="number" name="id_user"
-                value="{{ $editData->id_user ?? '' }}" required>
-
-            <label>ID Number Surat</label>
-            <input type="number" name="id_number_surat"
-                value="{{ $editData->id_number_surat ?? '' }}" required>
+            <!-- id_user & id_number_surat disembunyikan sementara -->
+            <input type="hidden" name="id_user" value="1">
+            <input type="hidden" name="id_number_surat" value="1">
 
             <button type="submit" class="btn" style="margin-top:10px;">
                 {{ isset($editData) ? 'Update' : 'Simpan' }}
@@ -102,7 +104,7 @@
                       method="POST" style="display:inline">
                     @csrf
                     @method('DELETE')
-                    <button class="btn btn-danger" onclick="return confirm('Hapus?')">Hapus</button>
+                    <button class="btn-danger" onclick="return confirm('Hapus?')">Hapus</button>
                 </form>
             </td>
         </tr>
