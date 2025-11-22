@@ -88,7 +88,18 @@
                             <span class="pc-mtext">Agenda</span>
                         </a>
                     </li>
-
+ <li class="pc-item">
+                        <a href="{{ url('/agenda') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Divisi</span>
+                        </a>
+                    </li>
+                     <li class="pc-item">
+                        <a href="{{ url('/agenda') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Jabatan</span>
+                        </a>
+                    </li>
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>
