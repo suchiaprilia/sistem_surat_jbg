@@ -44,30 +44,29 @@
     <nav class="pc-sidebar">
         <div class="navbar-wrapper">
             <div class="m-header">
-                <a href="{{ url('/') }}" class="b-brand text-primary">
+                <a href="{{ route('dashboard') }}" class="b-brand text-primary">
                     <img src="{{ asset('gradient/assets/images/logojbg2.png') }}" alt="Logo JBG" class="logo-lg" style="height: 50px; width: auto;" />
                 </a>
             </div>
-           
-                    <div class="navbar-content">
+            <div class="navbar-content">
                 <ul class="pc-navbar">
                     <li class="pc-item pc-caption">
                         <label>Navigation</label>
                     </li>
                     <li class="pc-item">
-                        <a href="{{ url('/') }}" class="pc-link">
+                        <a href="{{ route('dashboard') }}" class="pc-link">
                             <span class="pc-micon"><i class="ph ph-gauge"></i></span>
                             <span class="pc-mtext">Dashboard</span>
                         </a>
                     </li>
                     <li class="pc-item">
-                        <a href="{{ url('/surat-masuk') }}" class="pc-link">
+                        <a href="{{ route('surat-masuk.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-mail"></i></span>
                             <span class="pc-mtext">Surat Masuk</span>
                         </a>
                     </li>
                     <li class="pc-item">
-                        <a href="{{ url('/surat-keluar') }}" class="pc-link">
+                        <a href="{{ route('surat-keluar.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-send"></i></span>
                             <span class="pc-mtext">Surat Keluar</span>
                         </a>
@@ -78,10 +77,24 @@
                             <span class="pc-mtext">Agenda</span>
                         </a>
                     </li>
- <li class="pc-item">
-                      
+
+                    <li class="pc-item pc-caption">
+                        <label>Master</label>
+                        <i class="ph ph-folder"></i>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ route('divisi.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-building"></i></span>
+                            <span class="pc-mtext">Divisi</span>
                         </a>
                     </li>
+                    <li class="pc-item">
+                        <a href="{{ route('jabatan.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-id"></i></span>
+                            <span class="pc-mtext">Jabatan</span>
+                        </a>
+                    </li>
+
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>
@@ -98,21 +111,6 @@
                             <span class="pc-mtext">Register</span>
                         </a>
                     </li>
-                     <li class="pc-item pc-caption">
-                        <label>Master</label>
-                        <i class="ph ph-devices"></i>
-                    </li>
-                   <a href="{{ url('/divisi') }}" class="pc-link">
-                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
-                            <span class="pc-mtext">Divisi</span>
-                        </a>
-                    </li>
-                        <a href="{{ url('/jabatan') }}" class="pc-link">
-                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
-                            <span class="pc-mtext">Jabatan</span>
-                        </a>
-                    </li>
-                     
                 </ul>
             </div>
         </div>
@@ -123,7 +121,7 @@
     <header class="pc-header">
         <div class="header-wrapper">
             <div class="m-header">
-                <a href="{{ url('/') }}" class="b-brand text-primary">
+                <a href="{{ route('dashboard') }}" class="b-brand text-primary">
                     <img src="{{ asset('gradient/assets/images/logojbg2.png') }}" alt="Logo JBG" class="logo-lg" style="height: 50px; width: auto;" />
                 </a>
             </div>
@@ -208,7 +206,7 @@
                 </div>
                 <div class="col-sm-6 ms-auto my-1 text-end">
                     <ul class="list-inline mb-0">
-                        <li class="list-inline-item"><a href="{{ url('/') }}">Home</a></li>
+                        <li class="list-inline-item"><a href="{{ route('dashboard') }}">Home</a></li>
                     </ul>
                 </div>
             </div>
