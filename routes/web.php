@@ -5,6 +5,7 @@ use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\KaryawanController;
 
 // =======================
 // HALAMAN DASHBOARD
@@ -32,3 +33,5 @@ Route::resource('surat-masuk', SuratMasukController::class);
 Route::resource('surat-keluar', SuratKeluarController::class);
 Route::resource('divisi', DivisiController::class);
 Route::resource('jabatan', JabatanController::class);
+Route::resource('karyawan', KaryawanController::class);
+
