@@ -89,15 +89,7 @@
                         </a>
                     </li>
  <li class="pc-item">
-                        <a href="{{ url('/agenda') }}" class="pc-link">
-                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
-                            <span class="pc-mtext">Divisi</span>
-                        </a>
-                    </li>
-                     <li class="pc-item">
-                        <a href="{{ url('/agenda') }}" class="pc-link">
-                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
-                            <span class="pc-mtext">Jabatan</span>
+                      
                         </a>
                     </li>
                     <li class="pc-item pc-caption">
@@ -116,6 +108,21 @@
                             <span class="pc-mtext">Register</span>
                         </a>
                     </li>
+                     <li class="pc-item pc-caption">
+                        <label>Master</label>
+                        <i class="ph ph-devices"></i>
+                    </li>
+                   <a href="{{ url('/divisi') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Divisi</span>
+                        </a>
+                    </li>
+                        <a href="{{ url('/jabatan') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Jabatan</span>
+                        </a>
+                    </li>
+                     
                 </ul>
             </div>
 </nav>

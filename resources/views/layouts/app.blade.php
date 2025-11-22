@@ -48,7 +48,8 @@
                     <img src="{{ asset('gradient/assets/images/logojbg2.png') }}" alt="Logo JBG" class="logo-lg" style="height: 50px; width: auto;" />
                 </a>
             </div>
-            <div class="navbar-content">
+           
+                    <div class="navbar-content">
                 <ul class="pc-navbar">
                     <li class="pc-item pc-caption">
                         <label>Navigation</label>
@@ -77,7 +78,10 @@
                             <span class="pc-mtext">Agenda</span>
                         </a>
                     </li>
-
+ <li class="pc-item">
+                      
+                        </a>
+                    </li>
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>
@@ -94,6 +98,21 @@
                             <span class="pc-mtext">Register</span>
                         </a>
                     </li>
+                     <li class="pc-item pc-caption">
+                        <label>Master</label>
+                        <i class="ph ph-devices"></i>
+                    </li>
+                   <a href="{{ url('/divisi') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Divisi</span>
+                        </a>
+                    </li>
+                        <a href="{{ url('/jabatan') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Jabatan</span>
+                        </a>
+                    </li>
+                     
                 </ul>
             </div>
         </div>
