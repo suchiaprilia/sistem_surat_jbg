@@ -53,7 +53,7 @@ class DivisiController extends Controller
     {
         Divisi::findOrFail($id)->delete();
 
-        return redirect()->route('divisi')
+        return redirect()->route('divisi.index')
                          ->with('success', 'Divisi berhasil dihapus!');
     }
 }
