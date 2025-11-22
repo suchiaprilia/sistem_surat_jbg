@@ -15,6 +15,7 @@
         input, select { width:100%; padding:8px; margin-top:5px; margin-bottom:10px; }
         .form-box { background:#f9f9f9; padding:20px; border-radius:10px; margin-top:20px; }
         .alert { padding:10px; background:#e8ffe8; color:green; margin:10px 0; }
+        .error { color:red; font-size:13px; margin-bottom:10px; }
     </style>
 </head>
 
@@ -38,17 +39,29 @@
             @if(isset($editData)) @method('PUT') @endif
 
             <label>Nama Karyawan</label>
-            <input type="text" name="nama_karyawan" value="{{ $editData->nama_karyawan ?? '' }}" required>
+            <input type="text" name="nama_karyawan"
+                   value="{{ old('nama_karyawan', $editData->nama_karyawan ?? '') }}"
+                   pattern="[A-Za-z\s]+"
+                   title="Nama hanya boleh huruf."
+                   required>
+            @error('nama_karyawan')
+                <div class="error">{{ $message }}</div>
+            @enderror
 
             <label>Email</label>
-            <input type="email" name="email_karyawan" value="{{ $editData->email_karyawan ?? '' }}" required>
+            <input type="email" name="email_karyawan"
+                   value="{{ old('email_karyawan', $editData->email_karyawan ?? '') }}"
+                   required>
+            @error('email_karyawan')
+                <div class="error">{{ $message }}</div>
+            @enderror
 
             <label>Divisi</label>
             <select name="id_divisi" required>
                 <option value="">— Pilih Divisi —</option>
                 @foreach($divisi as $d)
                     <option value="{{ $d->id_divisi }}"
-                        {{ isset($editData) && $editData->id_divisi == $d->id_divisi ? 'selected' : '' }}>
+                        {{ old('id_divisi', $editData->id_divisi ?? '') == $d->id_divisi ? 'selected' : '' }}>
                         {{ $d->nama_divisi }}
                     </option>
                 @endforeach
@@ -59,7 +72,7 @@
                 <option value="">— Pilih Jabatan —</option>
                 @foreach($jabatan as $j)
                     <option value="{{ $j->id_jabatan }}"
-                        {{ isset($editData) && $editData->id_jabatan == $j->id_jabatan ? 'selected' : '' }}>
+                        {{ old('id_jabatan', $editData->id_jabatan ?? '') == $j->id_jabatan ? 'selected' : '' }}>
                         {{ $j->nama_jabatan }}
                     </option>
                 @endforeach
