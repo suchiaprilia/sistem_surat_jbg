@@ -60,140 +60,53 @@
   </a>
 </div>
     <div class="navbar-content">
-      <ul class="pc-navbar">
-        <li class="pc-item pc-caption">
-          <label>Navigation</label>
-        </li>
-        <li class="pc-item">
-          <a href="/gradient/dashboard/index.html" class="pc-link"
-            ><span class="pc-micon"> <i class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span></a
-          >
-        </li>
- <!-- Di sini kita tambahkan menu "Surat Masuk" -->
-                <li class="pc-item">
-                    <a href="{{ url('/surat-masuk') }}" class="pc-link">
-                        <span class="pc-micon">
-                            <i class="ti ti-mail"></i> <!-- Icon surat -->
-                        </span>
-                        <span class="pc-mtext">Surat Masuk</span>
-                    </a>
-                </li>
-        <li class="pc-item">
-            <a href="{{ url('/surat-keluar') }}" class="pc-link">
-                <span class="pc-micon">
-                    <i class="ti ti-send"></i> <!-- Icon surat keluar -->
-                </span>
-                <span class="pc-mtext">Surat Keluar</span>
-            </a>
-        </li>
-                <li class="pc-item">
-            <a href="{{ url('/agenda') }}" class="pc-link">
-                <span class="pc-micon">
-                    <i class="ti ti-calendar"></i> <!-- Icon kalender/agenda -->
-                </span>
-                <span class="pc-mtext">Agenda</span>
-            </a>
-        </li>
-        <li class="pc-item pc-caption">
-          <label>UI Components</label>
-          <i class="ph ph-compass-tool"></i>
-        </li>
-        <li class="pc-item">
-          <a href="/gradient/elements/bc_typography.html" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
-            <span class="pc-mtext">surat masuk</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="/gradient/elements/bc_color.html" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-palette"></i></span>
-            <span class="pc-mtext">Color</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="/gradient/elements/icon-feather.html" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-flower-lotus"></i></span>
-            <span class="pc-mtext">Icons</span>
-          </a>
-        </li>
+                <ul class="pc-navbar">
+                    <li class="pc-item pc-caption">
+                        <label>Navigation</label>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ url('/') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ph ph-gauge"></i></span>
+                            <span class="pc-mtext">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ url('/surat-masuk') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-mail"></i></span>
+                            <span class="pc-mtext">Surat Masuk</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ url('/surat-keluar') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-send"></i></span>
+                            <span class="pc-mtext">Surat Keluar</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ url('/agenda') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar"></i></span>
+                            <span class="pc-mtext">Agenda</span>
+                        </a>
+                    </li>
 
-        <li class="pc-item pc-caption">
-          <label>Pages</label>
-          <i class="ph ph-devices"></i>
-        </li>
-        <li class="pc-item">
-          <a href="/gradient/pages/login-v1.html" target="_blank" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-lock"></i></span>
-            <span class="pc-mtext">Login</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="/gradient/pages/register-v1.html" target="_blank" class="pc-link">
-            <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
-            <span class="pc-mtext">Register</span>
-          </a>
-        </li>
-        <li class="pc-item pc-caption">
-          <label>Other</label>
-          <i class="ph ph-suitcase"></i>
-        </li>
-        <li class="pc-item pc-hasmenu">
-          <a href="#!" class="pc-link"
-            ><span class="pc-micon"> <i class="ph ph-tree-structure"></i> </span><span class="pc-mtext">Menu levels</span
-            ><span class="pc-arrow"><i data-feather="chevron-right"></i></span
-          ></a>
-          <ul class="pc-submenu">
-            <li class="pc-item"><a class="pc-link" href="#!">Level 2.1</a></li>
-            <li class="pc-item pc-hasmenu">
-              <a href="#!" class="pc-link"
-                >Level 2.2<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-              ></a>
-              <ul class="pc-submenu">
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                <li class="pc-item pc-hasmenu">
-                  <a href="#!" class="pc-link"
-                    >Level 3.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-                  ></a>
-                  <ul class="pc-submenu">
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li class="pc-item pc-hasmenu">
-              <a href="#!" class="pc-link"
-                >Level 2.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-              ></a>
-              <ul class="pc-submenu">
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                <li class="pc-item pc-hasmenu">
-                  <a href="#!" class="pc-link"
-                    >Level 3.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span
-                  ></a>
-                  <ul class="pc-submenu">
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="pc-item"
-          ><a href="/gradient/other/sample-page.html" class="pc-link">
-            <span class="pc-micon">
-              <i class="ph ph-desktop"></i>
-            </span>
-            <span class="pc-mtext">Sample page</span></a
-          ></li
-        >
-
-      </ul>
-    </div>
-  </div>
+                    <li class="pc-item pc-caption">
+                        <label>Pages</label>
+                        <i class="ph ph-devices"></i>
+                    </li>
+                    <li class="pc-item">
+                        <a href="/gradient/pages/login-v1.html" target="_blank" class="pc-link">
+                            <span class="pc-micon"><i class="ph ph-lock"></i></span>
+                            <span class="pc-mtext">Login</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
+                        <a href="/gradient/pages/register-v1.html" target="_blank" class="pc-link">
+                            <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
+                            <span class="pc-mtext">Register</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 </nav>
 <!-- [ Sidebar Menu ] end -->
  <!-- [ Header Topbar ] start -->
