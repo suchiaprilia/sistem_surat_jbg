@@ -94,6 +94,12 @@
                             <span class="pc-mtext">Jabatan</span>
                         </a>
                     </li>
+                    <li class="pc-item">
+                        <a href="{{ route('karyawan.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-users"></i></span>
+                            <span class="pc-mtext">Karyawan</span>
+                        </a>
+                    </li>
 
                     <li class="pc-item pc-caption">
                         <label>Pages</label>

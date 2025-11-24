@@ -24,68 +24,17 @@
         <div class="card">
             <div class="card-header">
                 <h5>Manajemen Divisi</h5>
-                <a href="{{ route('dashboard') }}" class="btn btn-success">← Kembali ke Dashboard</a>
+                <button class="btn btn-primary" id="btnTambah">+ Tambah Divisi</button>
             </div>
             <div class="card-body">
 
+                <!-- Alert Success -->
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
                         {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
-                <!-- Form Tambah/Edit -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>{{ isset($editData) ? '✏ Edit Divisi' : '➕ Tambah Divisi' }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <form
-                            action="{{ isset($editData) ? route('divisi.update', $editData->id_divisi) : route('divisi.store') }}"
-                            method="POST">
-                            @csrf
-                            @if(isset($editData))
-                                @method('PUT')
-                            @endif
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="nama_divisi" class="form-label">Nama Divisi</label>
-                                    <input type="text" class="form-control" name="nama_divisi"
-                                        value="{{ $editData->nama_divisi ?? '' }}" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="kode_divisi" class="form-label">Kode Divisi</label>
-                                    <input type="text" class="form-control" name="kode_divisi"
-                                        value="{{ $editData->kode_divisi ?? '' }}">
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="kepala_divisi" class="form-label">Kepala Divisi</label>
-                                    <input type="text" class="form-control" name="kepala_divisi"
-                                        value="{{ $editData->kepala_divisi ?? '' }}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="kontak" class="form-label">Kontak</label>
-                                    <input type="text" class="form-control" name="kontak"
-                                        value="{{ $editData->kontak ?? '' }}">
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="deskripsi" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" name="deskripsi" rows="3">{{ $editData->deskripsi ?? '' }}</textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                {{ isset($editData) ? 'Update' : 'Simpan' }}
-                            </button>
-                        </form>
-                    </div>
-                </div>
 
                 <!-- Tabel Data -->
                 <div class="table-responsive">
@@ -101,29 +50,128 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($divisis as $item)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->nama_divisi }}</td>
-                                <td>{{ $item->kode_divisi }}</td>
-                                <td>{{ $item->kepala_divisi }}</td>
-                                <td>{{ $item->kontak }}</td>
-                                <td>
-                                    <a class="btn btn-sm btn-warning" href="{{ route('divisi.edit', $item->id_divisi) }}">Edit</a>
-                                    <form action="{{ route('divisi.destroy', $item->id_divisi) }}" method="POST" style="display:inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus divisi ini?')">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
+                            @forelse ($divisis as $item)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $item->nama_divisi }}</td>
+                                    <td>{{ $item->kode_divisi }}</td>
+                                    <td>{{ $item->kepala_divisi }}</td>
+                                    <td>{{ $item->kontak }}</td>
+                                    <td>
+                                        <button
+                                            class="btn btn-sm btn-warning btn-edit"
+                                            data-id="{{ $item->id_divisi }}"
+                                            data-nama="{{ $item->nama_divisi }}"
+                                            data-kode="{{ $item->kode_divisi }}"
+                                            data-kepala="{{ $item->kepala_divisi }}"
+                                            data-kontak="{{ $item->kontak }}"
+                                            data-deskripsi="{{ $item->deskripsi }}">
+                                            Edit
+                                        </button>
+                                        <form action="{{ route('divisi.destroy', $item->id_divisi) }}" method="POST" style="display:inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus divisi ini?')">Hapus</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">Belum ada data divisi.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Form Tambah/Edit -->
+<div class="modal fade" id="divisiModal" tabindex="-1" aria-labelledby="divisiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="divisiModalLabel">Tambah Divisi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="divisiForm" action="{{ route('divisi.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="_method" id="formMethod" value="POST">
+                    <input type="hidden" name="id_divisi" id="id_divisi">
+
+                    <div class="mb-3">
+                        <label for="nama_divisi" class="form-label">Nama Divisi</label>
+                        <input type="text" class="form-control" name="nama_divisi" id="nama_divisi" placeholder="Contoh: Sekretariat" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kode_divisi" class="form-label">Kode Divisi</label>
+                        <input type="text" class="form-control" name="kode_divisi" id="kode_divisi" placeholder="Contoh: SEK">
+                    </div>
+                    <div class="mb-3">
+                        <label for="kepala_divisi" class="form-label">Kepala Divisi</label>
+                        <input type="text" class="form-control" name="kepala_divisi" id="kepala_divisi" placeholder="Nama kepala divisi">
+                    </div>
+                    <div class="mb-3">
+                        <label for="kontak" class="form-label">Kontak</label>
+                        <input type="text" class="form-control" name="kontak" id="kontak" placeholder="Nomor telepon / email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" name="deskripsi" id="deskripsi" rows="3" placeholder="Deskripsi singkat divisi"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tombol Tambah
+    document.getElementById('btnTambah').addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('divisiModal'));
+        modal.show();
+        document.getElementById('divisiModalLabel').textContent = 'Tambah Divisi';
+        document.getElementById('divisiForm').action = "{{ route('divisi.store') }}";
+        document.getElementById('formMethod').value = 'POST';
+        document.getElementById('divisiForm').reset();
+        document.getElementById('id_divisi').value = '';
+    });
+
+    // Tombol Edit
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('divisiModal'));
+            modal.show();
+            document.getElementById('divisiModalLabel').textContent = 'Edit Divisi';
+            document.getElementById('divisiForm').action = "/divisi/" + btn.dataset.id;
+            document.getElementById('formMethod').value = 'PUT';
+
+            document.getElementById('id_divisi').value = btn.dataset.id;
+            document.getElementById('nama_divisi').value = btn.dataset.nama;
+            document.getElementById('kode_divisi').value = btn.dataset.kode;
+            document.getElementById('kepala_divisi').value = btn.dataset.kepala;
+            document.getElementById('kontak').value = btn.dataset.kontak;
+            document.getElementById('deskripsi').value = btn.dataset.deskripsi;
+        });
+    });
+
+    // Auto-hide success alert dalam 3 detik
+    document.addEventListener('DOMContentLoaded', function() {
+        const alert = document.getElementById('successAlert');
+        if (alert) {
+            setTimeout(() => {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            }, 3000); // ✅ 3 detik
+        }
+    });
+</script>
 @endsection
