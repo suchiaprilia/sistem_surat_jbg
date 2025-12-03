@@ -24,43 +24,17 @@
         <div class="card">
             <div class="card-header">
                 <h5>Manajemen Jabatan</h5>
-                <a href="{{ route('dashboard') }}" class="btn btn-success">← Kembali ke Dashboard</a>
+                <button class="btn btn-primary" id="btnTambah">+ Tambah Jabatan</button>
             </div>
             <div class="card-body">
 
+                <!-- Alert Success -->
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
                         {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
-                <!-- Form Tambah/Edit -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>{{ isset($editData) ? '✏ Edit Jabatan' : '➕ Tambah Jabatan' }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <form
-                            action="{{ isset($editData) ? route('jabatan.update', $editData->id_jabatan) : route('jabatan.store') }}"
-                            method="POST">
-                            @csrf
-                            @if(isset($editData))
-                                @method('PUT')
-                            @endif
-
-                            <div class="mb-3">
-                                <label for="nama_jabatan" class="form-label">Nama Jabatan</label>
-                                <input type="text" class="form-control" name="nama_jabatan"
-                                    value="{{ $editData->nama_jabatan ?? '' }}" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                {{ isset($editData) ? 'Update' : 'Simpan' }}
-                            </button>
-                        </form>
-                    </div>
-                </div>
 
                 <!-- Tabel Data -->
                 <div class="table-responsive">
@@ -78,7 +52,12 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_jabatan }}</td>
                                     <td>
-                                        <a class="btn btn-sm btn-warning" href="{{ route('jabatan.edit', $item->id_jabatan) }}">Edit</a>
+                                        <button
+                                            class="btn btn-sm btn-warning btn-edit"
+                                            data-id="{{ $item->id_jabatan }}"
+                                            data-nama="{{ $item->nama_jabatan }}">
+                                            Edit
+                                        </button>
                                         <form action="{{ route('jabatan.destroy', $item->id_jabatan) }}" method="POST" style="display:inline">
                                             @csrf
                                             @method('DELETE')
@@ -94,9 +73,75 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Form Tambah/Edit -->
+<div class="modal fade" id="jabatanModal" tabindex="-1" aria-labelledby="jabatanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jabatanModalLabel">Tambah Jabatan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="jabatanForm" action="{{ route('jabatan.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="_method" id="formMethod" value="POST">
+                    <input type="hidden" name="id_jabatan" id="id_jabatan">
+
+                    <div class="mb-3">
+                        <label for="nama_jabatan" class="form-label">Nama Jabatan</label>
+                        <input type="text" class="form-control" name="nama_jabatan" id="nama_jabatan" placeholder="Contoh: Sekretaris" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tombol Tambah
+    document.getElementById('btnTambah').addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('jabatanModal'));
+        modal.show();
+        document.getElementById('jabatanModalLabel').textContent = 'Tambah Jabatan';
+        document.getElementById('jabatanForm').action = "{{ route('jabatan.store') }}";
+        document.getElementById('formMethod').value = 'POST';
+        document.getElementById('jabatanForm').reset();
+        document.getElementById('id_jabatan').value = '';
+    });
+
+    // Tombol Edit
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('jabatanModal'));
+            modal.show();
+            document.getElementById('jabatanModalLabel').textContent = 'Edit Jabatan';
+            document.getElementById('jabatanForm').action = "/jabatan/" + btn.dataset.id;
+            document.getElementById('formMethod').value = 'PUT';
+
+            document.getElementById('id_jabatan').value = btn.dataset.id;
+            document.getElementById('nama_jabatan').value = btn.dataset.nama;
+        });
+    });
+
+    // Auto-hide success alert dalam 3 detik
+    document.addEventListener('DOMContentLoaded', function() {
+        const alert = document.getElementById('successAlert');
+        if (alert) {
+            setTimeout(() => {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            }, 3000); // ✅ 3 detik
+        }
+    });
+</script>
 @endsection
