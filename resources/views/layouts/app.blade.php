@@ -100,7 +100,12 @@
                             <span class="pc-mtext">Karyawan</span>
                         </a>
                     </li>
-
+                    <li class="pc-item">
+                        <a href="{{ route('jenis-surat.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-tags"></i></span>
+                            <span class="pc-mtext">Jenis Surat</span>
+                        </a>
+                    </li>
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>

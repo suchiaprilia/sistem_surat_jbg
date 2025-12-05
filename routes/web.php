@@ -6,6 +6,7 @@ use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\JenisSuratController;
 
 // =======================
 // HALAMAN DASHBOARD
@@ -35,3 +36,9 @@ Route::resource('divisi', DivisiController::class);
 Route::resource('jabatan', JabatanController::class);
 Route::resource('karyawan', KaryawanController::class);
 
+Route::resource('jenis-surat', JenisSuratController::class)->names([
+    'index' => 'jenis-surat.index',
+    'store' => 'jenis-surat.store',
+    'update' => 'jenis-surat.update',
+    'destroy' => 'jenis-surat.destroy',
+]);
