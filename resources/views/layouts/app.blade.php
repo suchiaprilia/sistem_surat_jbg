@@ -102,7 +102,7 @@
                     </li>
                     <li class="pc-item">
                         <a href="{{ route('jenis-surat.index') }}" class="pc-link">
-                            <span class="pc-micon"><i class="ti ti-tags"></i></span>
+                            <span class="pc-micon"><i class="fas fa-tags"></i></span>
                             <span class="pc-mtext">Jenis Surat</span>
                         </a>
                     </li>
