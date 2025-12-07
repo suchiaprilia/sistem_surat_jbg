@@ -7,18 +7,13 @@ use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\JenisSuratController;
+use App\Http\Controllers\DashboardController; // ← tambahkan ini
 
 // =======================
 // HALAMAN DASHBOARD
 // =======================
-Route::get('/', function () {
-    return view('index');
-})->name('dashboard');   // <-- ini nama route dashboard utamanya
-
-Route::get('/dashboard', function () {
-    return view('index');
-})->name('dashboard');   // <-- biar / dan /dashboard sama-sama dashboard
-
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.redirect'); // opsional
 
 // =======================
 // HALAMAN LAIN
@@ -35,7 +30,6 @@ Route::resource('surat-keluar', SuratKeluarController::class);
 Route::resource('divisi', DivisiController::class);
 Route::resource('jabatan', JabatanController::class);
 Route::resource('karyawan', KaryawanController::class);
-
 Route::resource('jenis-surat', JenisSuratController::class)->names([
     'index' => 'jenis-surat.index',
     'store' => 'jenis-surat.store',
