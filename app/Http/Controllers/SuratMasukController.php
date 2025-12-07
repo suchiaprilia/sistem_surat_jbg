@@ -7,68 +7,76 @@ use Illuminate\Http\Request;
 
 class SuratMasukController extends Controller
 {
-    // Menampilkan semua data surat masuk
     public function index()
     {
         $suratMasuk = SuratMasuk::all();
         return view('surat-masuk', compact('suratMasuk'));
     }
 
-    // Menampilkan form tambah data
     public function create()
     {
         return view('surat-masuk-create');
     }
 
-    // Menyimpan data baru ke database
     public function store(Request $request)
     {
-        $request->validate([
-            'no_surat_masuk' => 'required',
-            'from' => 'required',
+        $validated = $request->validate([
+            'no_surat' => 'required',
+            'tanggal' => 'required|date',
+            'tanggal_terima' => 'required|date',
+            'penerima' => 'required',
+            'pengirim' => 'required',
             'subject' => 'required',
-            'date' => 'required|date',
-            'tujuan_email' => 'required',
-            'received_by' => 'required',
-            'id_user' => 'required|numeric'
+            'tujuan' => 'required',
+            'file_surat' => 'nullable|mimes:pdf,jpg,png'
         ]);
 
-        SuratMasuk::create($request->all());
-        return redirect()->route('surat-masuk.index')->with('success', 'Data berhasil ditambahkan!');
+        if ($request->hasFile('file_surat')) {
+            $validated['file_surat'] = $request->file('file_surat')
+                ->store('surat-masuk', 'public');
+        }
+
+        SuratMasuk::create($validated);
+
+        return redirect()->route('surat-masuk.index');
     }
 
-    // Menampilkan form edit data
     public function edit($id)
     {
-        $suratMasuk = SuratMasuk::findOrFail($id);
-        return view('surat-masuk-edit', compact('suratMasuk'));
+        $item = SuratMasuk::findOrFail($id);
+        return view('surat-masuk-edit', compact('item'));
     }
 
-    // Memperbarui data di database
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'no_surat_masuk' => 'required',
-            'from' => 'required',
+        $item = SuratMasuk::findOrFail($id);
+
+        $validated = $request->validate([
+            'no_surat' => 'required',
+            'tanggal' => 'required|date',
+            'tanggal_terima' => 'required|date',
+            'penerima' => 'required',
+            'pengirim' => 'required',
             'subject' => 'required',
-            'date' => 'required|date',
-            'tujuan_email' => 'required',
-            'received_by' => 'required',
-            'id_user' => 'required|numeric'
+            'tujuan' => 'required',
+            'file_surat' => 'nullable|mimes:pdf,jpg,png'
         ]);
 
-        $suratMasuk = SuratMasuk::findOrFail($id);
-        $suratMasuk->update($request->all());
+        if ($request->hasFile('file_surat')) {
+            $validated['file_surat'] = $request->file('file_surat')
+                ->store('surat-masuk', 'public');
+        }
 
-        return redirect()->route('surat-masuk.index')->with('success', 'Data berhasil diperbarui!');
+        $item->update($validated);
+
+        return redirect()->route('surat-masuk.index');
     }
 
-    // Menghapus data dari database
     public function destroy($id)
     {
-        $suratMasuk = SuratMasuk::findOrFail($id);
-        $suratMasuk->delete();
-
-        return redirect()->route('surat-masuk.index')->with('success', 'Data berhasil dihapus!');
+        $item = SuratMasuk::findOrFail($id);
+        $item->delete();
+        return redirect()->route('surat-masuk.index');
     }
 }
+
