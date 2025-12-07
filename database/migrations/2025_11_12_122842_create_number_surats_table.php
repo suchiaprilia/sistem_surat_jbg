@@ -17,7 +17,7 @@ return new class extends Migration
         $table->integer('tahun');
         $table->integer('bulan');
         $table->timestamps();
-    });
+    });  
 }
 
 
