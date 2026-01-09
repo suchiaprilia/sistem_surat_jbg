@@ -7,7 +7,8 @@ use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\JenisSuratController;
-use App\Http\Controllers\DashboardController; // ← tambahkan ini
+use App\Http\Controllers\DashboardController; // 
+use App\Http\Controllers\RekapSuratController;
 
 // =======================
 // HALAMAN DASHBOARD
@@ -15,9 +16,10 @@ use App\Http\Controllers\DashboardController; // ← tambahkan ini
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.redirect'); // opsional
 
-// =======================
-// HALAMAN LAIN
-// =======================
+// halaman rekap
+Route::get('/rekap-surat', [RekapSuratController::class, 'index']);
+Route::get('/rekap-surat', [RekapSuratController::class, 'index']);
+
 Route::get('/test', function () {
     return view('test');
 });
