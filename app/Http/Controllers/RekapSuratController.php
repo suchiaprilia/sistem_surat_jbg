@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RekapSuratExport;
 
 class RekapSuratController extends Controller
 {
@@ -52,5 +55,42 @@ class RekapSuratController extends Controller
             'rekapJenisMasuk',
             'rekapJenisKeluar'
         ));
+    }
+
+    // =======================
+    // EXPORT PDF
+    // =======================
+    public function exportPdf(Request $request)
+    {
+        $start = $request->start_date;
+        $end   = $request->end_date;
+
+        $suratMasuk = SuratMasuk::with('jenisSurat')
+            ->when($start && $end, fn ($q) =>
+                $q->whereBetween('tanggal_terima', [$start, $end])
+            )->get();
+
+        $suratKeluar = SuratKeluar::with('jenisSurat')
+            ->when($start && $end, fn ($q) =>
+                $q->whereBetween('date', [$start, $end])
+            )->get();
+
+        $pdf = Pdf::loadView('rekap-surat-pdf', compact(
+            'suratMasuk',
+            'suratKeluar'
+        ));
+
+        return $pdf->download('rekap-surat.pdf');
+    }
+
+    // =======================
+    // EXPORT EXCEL
+    // =======================
+    public function exportExcel(Request $request)
+    {
+        return Excel::download(
+            new RekapSuratExport($request),
+            'rekap-surat.xlsx'
+        );
     }
 }

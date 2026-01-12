@@ -21,6 +21,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 // =======================
 Route::get('/rekap-surat', [RekapSuratController::class, 'index'])->name('rekap-surat');
 
+Route::get('/rekap-surat/export/pdf', [RekapSuratController::class, 'exportPdf'])
+    ->name('rekap-surat.export.pdf');
+
+Route::get('/rekap-surat/export/excel', [RekapSuratController::class, 'exportExcel'])
+    ->name('rekap-surat.export.excel');
+
 // =======================
 // HALAMAN LAIN
 // =======================
