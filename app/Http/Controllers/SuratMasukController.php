@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
+use App\Models\JenisSurat;
 use Illuminate\Http\Request;
 
 class SuratMasukController extends Controller
 {
     public function index()
     {
-        $suratMasuk = SuratMasuk::all();
-        return view('surat-masuk', compact('suratMasuk'));
+        $suratMasuk = SuratMasuk::with('jenisSurat')->get(); // eager loading
+        $jenisSurat = JenisSurat::all();
+        return view('surat-masuk', compact('suratMasuk', 'jenisSurat'));
     }
 
     public function create()
@@ -20,6 +22,7 @@ class SuratMasukController extends Controller
 
     public function store(Request $request)
     {
+        // ✅ TAMBAHKAN VALIDASI id_jenis_surat
         $validated = $request->validate([
             'no_surat' => 'required',
             'tanggal' => 'required|date',
@@ -28,6 +31,7 @@ class SuratMasukController extends Controller
             'pengirim' => 'required',
             'subject' => 'required',
             'tujuan' => 'required',
+            'id_jenis_surat' => 'required|exists:jenis_surat,id_jenis_surat', // ← INI YANG KURANG!
             'file_surat' => 'nullable|mimes:pdf,jpg,png'
         ]);
 
@@ -38,19 +42,21 @@ class SuratMasukController extends Controller
 
         SuratMasuk::create($validated);
 
-        return redirect()->route('surat-masuk.index');
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $item = SuratMasuk::findOrFail($id);
-        return view('surat-masuk-edit', compact('item'));
+        $jenisSurat = JenisSurat::all(); // kirim data jenis surat untuk dropdown
+        return view('surat-masuk-edit', compact('item', 'jenisSurat'));
     }
 
     public function update(Request $request, $id)
     {
         $item = SuratMasuk::findOrFail($id);
 
+        // ✅ TAMBAHKAN VALIDASI id_jenis_surat
         $validated = $request->validate([
             'no_surat' => 'required',
             'tanggal' => 'required|date',
@@ -59,6 +65,7 @@ class SuratMasukController extends Controller
             'pengirim' => 'required',
             'subject' => 'required',
             'tujuan' => 'required',
+            'id_jenis_surat' => 'required|exists:jenis_surat,id_jenis_surat', // ← INI YANG KURANG!
             'file_surat' => 'nullable|mimes:pdf,jpg,png'
         ]);
 
@@ -69,14 +76,13 @@ class SuratMasukController extends Controller
 
         $item->update($validated);
 
-        return redirect()->route('surat-masuk.index');
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $item = SuratMasuk::findOrFail($id);
         $item->delete();
-        return redirect()->route('surat-masuk.index');
+        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil dihapus.');
     }
 }
-

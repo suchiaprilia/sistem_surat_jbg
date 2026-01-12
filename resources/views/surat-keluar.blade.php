@@ -46,6 +46,7 @@
                                 <th>Tujuan</th>
                                 <th>Subject</th>
                                 <th>Tanggal</th>
+                                <th>Jenis</th> <!-- Kolom Jenis -->
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -57,6 +58,7 @@
                                     <td>{{ $item->destination }}</td>
                                     <td>{{ $item->subject }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
+                                    <td>{{ $item->jenisSurat ? $item->jenisSurat->jenis_surat : '-' }}</td> <!-- Tampilkan Jenis -->
                                     <td>
                                         <button
                                             class="btn btn-sm btn-warning btn-edit"
@@ -64,7 +66,8 @@
                                             data-no="{{ $item->no_surat_keluar }}"
                                             data-destination="{{ $item->destination }}"
                                             data-subject="{{ $item->subject }}"
-                                            data-date="{{ $item->date }}">
+                                            data-date="{{ $item->date }}"
+                                            data-jenis-id="{{ $item->id_jenis_surat }}"> <!-- Untuk Edit -->
                                             Edit
                                         </button>
                                         <form action="{{ route('surat-keluar.destroy', $item->id_surat_keluar) }}" method="POST" style="display:inline">
@@ -76,7 +79,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Belum ada surat keluar.</td>
+                                    <td colspan="7" class="text-center">Belum ada surat keluar.</td> <!-- Ubah colspan jadi 7 -->
                                 </tr>
                             @endforelse
                         </tbody>
@@ -120,6 +123,19 @@
                         <input type="date" class="form-control" name="date" id="date" required>
                     </div>
 
+                    <!-- Dropdown Jenis Surat -->
+                    <div class="mb-3">
+                        <label for="id_jenis_surat" class="form-label">Jenis Surat</label>
+                        <select name="id_jenis_surat" id="id_jenis_surat" class="form-control" required>
+                            <option value="">-- Pilih Jenis Surat --</option>
+                            @foreach($jenisSurat as $jenis)
+                                <option value="{{ $jenis->id_jenis_surat }}">
+                                    {{ $jenis->jenis_surat }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -156,6 +172,7 @@
             document.getElementById('destination').value = btn.dataset.destination;
             document.getElementById('subject').value = btn.dataset.subject;
             document.getElementById('date').value = btn.dataset.date;
+            document.getElementById('id_jenis_surat').value = btn.dataset.jenisId; // Isi dropdown saat edit
         });
     });
 
