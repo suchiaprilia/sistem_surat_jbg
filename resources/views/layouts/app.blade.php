@@ -155,18 +155,18 @@
                         </a>
                     </li>
                     <li class="dropdown pc-h-item">
-                        <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                            <i class="ph ph-magnifying-glass"></i>
-                        </a>
-                        <div class="dropdown-menu pc-h-dropdown drp-search">
-                            <form class="px-3">
-                                <div class="form-group mb-0 d-flex align-items-center">
-                                    <input type="search" class="form-control border-0 shadow-none" placeholder="Search..." />
-                                    <button class="btn btn-light-secondary btn-search">Search</button>
-                                </div>
-                            </form>
-                        </div>
-                    </li>
+                    <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                        <i class="ph ph-magnifying-glass"></i>
+                    </a>
+                    <div class="dropdown-menu pc-h-dropdown drp-search">
+                        <form class="px-3" method="GET" action="{{ route('search') }}">
+                            <div class="form-group mb-0 d-flex align-items-center">
+                                <input type="search" name="q" class="form-control border-0 shadow-none" placeholder="Cari surat..." />
+                                <button type="submit" class="btn btn-light-secondary btn-search">Cari</button>
+                            </div>
+                        </form>
+                    </div>
+                </li>
                 </ul>
             </div>
             <div class="ms-auto">
@@ -256,5 +256,19 @@
         preset_change('preset-1');
         header_change('header-1');
     </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.drp-search input[type="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.form.submit();
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
