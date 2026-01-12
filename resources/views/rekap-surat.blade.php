@@ -1,228 +1,263 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Rekap Surat</title>
-    <style>
-        body {
-            background: #f5f7fb;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-        }
+@extends('layouts.app')
 
-        .container-rekap {
-            padding: 24px;
-        }
+@section('title', 'Rekap Surat')
 
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
+@push('styles')
+<style>
+    /* Warna solid sesuai contoh */
+    .bg-blue-custom {
+        background: #4f8cff;
+        color: #fff;
+    }
 
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
+    .bg-green-custom {
+        background: #2ecc71;
+        color: #fff;
+    }
 
-        /* FILTER */
-        .filter-row {
-            display: flex;
-            gap: 16px;
-            align-items: end;
-            flex-wrap: wrap;
-        }
+    .bg-orange-custom {
+        background: #ff9800;
+        color: #fff;
+    }
 
-        .filter-row label {
-            font-size: 13px;
-            color: #555;
-            display: block;
-            margin-bottom: 4px;
-        }
+    /* Jika ingin teks hitam di dalam kotak berwarna, ganti color: #fff → color: #333 */
+    /* Tapi karena contohmu teks putih, kita biarkan */
 
-        .filter-row input {
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
+    .summary-card {
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
-        .btn-primary {
-            background: #4f8cff;
-            color: #fff;
-            border: none;
-            padding: 9px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+    .summary-card p {
+        font-size: 14px;
+        opacity: 0.9;
+        margin: 0;
+    }
 
-        .btn-primary:hover {
-            background: #3a78f2;
-        }
+    .summary-card h3 {
+        font-size: 28px;
+        margin: 6px 0 0;
+        font-weight: bold;
+    }
 
-        .btn-link {
-            margin-left: 10px;
-            color: #4f8cff;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    /* Filter styling */
+    .filter-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
 
-        /* SUMMARY */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+    .filter-row {
+        display: flex;
+        gap: 16px;
+        align-items: end;
+        flex-wrap: wrap;
+    }
 
-        .summary-card {
-            border-radius: 14px;
-            padding: 18px;
-            color: #fff;
-        }
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
 
-        .summary-card p {
-            font-size: 14px;
-            opacity: 0.9;
-            margin: 0;
-        }
+    .filter-group label {
+        font-size: 13px;
+        color: #555;
+        margin: 0;
+    }
 
+    .filter-group input {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    .btn-filter {
+        background: #4f8cff;
+        color: #fff;
+        border: none;
+        padding: 9px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+    }
+
+    .btn-filter:hover {
+        background: #3a78f2;
+    }
+
+    .btn-reset {
+        color: #4f8cff;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+        line-height: 38px;
+        margin-left: 10px;
+    }
+
+    /* Table styling */
+    .custom-table th {
+        background: #f1f3f9;
+        padding: 12px;
+        font-size: 14px;
+        text-align: left;
+    }
+
+    .custom-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
         .summary-card h3 {
-            font-size: 28px;
-            margin: 6px 0 0;
+            font-size: 24px;
         }
+    }
+</style>
+@endpush
 
-        .blue { background: linear-gradient(135deg, #5aa9ff, #3f7cff); }
-        .green { background: linear-gradient(135deg, #5ee7b2, #2ecc71); }
-        .orange { background: linear-gradient(135deg, #ffbe76, #f0932b); }
-
-        /* TABLE */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table th {
-            background: #f1f3f9;
-            padding: 12px;
-            font-size: 14px;
-            text-align: left;
-        }
-
-        table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        h4 {
-            margin-bottom: 12px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container-rekap">
-
-    <h2 class="page-title">Rekap Surat</h2>
+@section('content')
+<div class="pc-content">
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <ul class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+                        <li class="breadcrumb-item active">Rekap Surat</li>
+                    </ul>
+                </div>
+                <div class="col-md-12 mt-3">
+                    <h2 class="page-header-title">📊 Rekap Surat</h2>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- FILTER -->
-    <div class="card">
-        <form method="GET">
+    <div class="filter-box">
+        <form method="GET" action="{{ route('rekap-surat') }}">
             <div class="filter-row">
-                <div>
+                <div class="filter-group">
                     <label>Dari</label>
-                    <input type="date" name="start_date" value="{{ request('start_date') }}">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
                 </div>
-                <div>
+                <div class="filter-group">
                     <label>Sampai</label>
-                    <input type="date" name="end_date" value="{{ request('end_date') }}">
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
                 </div>
                 <div>
-                    <button class="btn-primary">Filter</button>
-                    <a href="/rekap-surat" class="btn-link">Reset</a>
+                    <button type="submit" class="btn-filter">Filter</button>
+                    <a href="{{ route('rekap-surat') }}" class="btn-reset">Reset</a>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- RINGKASAN -->
-    <div class="summary-grid">
-        <div class="summary-card blue">
-            <p>Total Surat Masuk</p>
-            <h3>{{ $totalMasuk }}</h3>
+    <!-- RINGKASAN (HANYA WARNA YANG DIUBAH) -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body summary-card bg-blue-custom">
+                    <p>Total Surat Masuk</p>
+                    <h3>{{ $totalMasuk }}</h3>
+                </div>
+            </div>
         </div>
-        <div class="summary-card green">
-            <p>Total Surat Keluar</p>
-            <h3>{{ $totalKeluar }}</h3>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body summary-card bg-green-custom">
+                    <p>Total Surat Keluar</p>
+                    <h3>{{ $totalKeluar }}</h3>
+                </div>
+            </div>
         </div>
-        <div class="summary-card orange">
-            <p>Total Semua Surat</p>
-            <h3>{{ $totalMasuk + $totalKeluar }}</h3>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body summary-card bg-orange-custom">
+                    <p>Total Semua Surat</p>
+                    <h3>{{ $totalMasuk + $totalKeluar }}</h3>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- SURAT MASUK -->
-    <div class="card">
-        <h4>Surat Masuk</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>No Surat</th>
-                    <th>Pengirim</th>
-                    <th>Perihal</th>
-                    <th>Jenis</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($suratMasuk as $s)
-                <tr>
-                    <td>{{ $s->no_surat }}</td>
-                    <td>{{ $s->pengirim }}</td>
-                    <td>{{ $s->subject }}</td>
-                    <td>{{ $s->jenisSurat->jenis_surat ?? '-' }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4">Tidak ada data</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Surat Masuk</h5>
+        </div>
+        <div class="card-body">
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        <th>No Surat</th>
+                        <th>Pengirim</th>
+                        <th>Perihal</th>
+                        <th>Jenis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($suratMasuk as $s)
+                    <tr>
+                        <td>{{ $s->no_surat ?? '-' }}</td>
+                        <td>{{ $s->pengirim ?? '-' }}</td>
+                        <td>{{ $s->subject ?? '-' }}</td>
+                        <td>{{ optional($s->jenisSurat)->jenis_surat ?? '-' }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- SURAT KELUAR -->
-    <div class="card">
-        <h4>Surat Keluar</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>No Surat</th>
-                    <th>Tujuan</th>
-                    <th>Perihal</th>
-                    <th>Jenis</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($suratKeluar as $s)
-                <tr>
-                    <td>{{ $s->no_surat_keluar }}</td>
-                    <td>{{ $s->destination }}</td>
-                    <td>{{ $s->subject }}</td>
-                    <td>{{ $s->jenisSurat->jenis_surat ?? '-' }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4">Tidak ada data</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Surat Keluar</h5>
+        </div>
+        <div class="card-body">
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        <th>No Surat</th>
+                        <th>Tujuan</th>
+                        <th>Perihal</th>
+                        <th>Jenis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($suratKeluar as $s)
+                    <tr>
+                        <td>{{ $s->no_surat_keluar ?? '-' }}</td>
+                        <td>{{ $s->destination ?? '-' }}</td>
+                        <td>{{ $s->subject ?? '-' }}</td>
+                        <td>{{ optional($s->jenisSurat)->jenis_surat ?? '-' }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
-
-</body>
-</html>
+@endsection

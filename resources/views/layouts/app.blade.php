@@ -72,6 +72,12 @@
                         </a>
                     </li>
                     <li class="pc-item">
+                        <a href="{{ route('rekap-surat') }}" class="pc-link {{ request()->is('rekap-surat') ? 'active' : '' }}">
+                            <span class="pc-micon"><i class="ti ti-file-text"></i></span>
+                            <span class="pc-mtext">Rekap Surat</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
                         <a href="{{ url('/agenda') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-calendar"></i></span>
                             <span class="pc-mtext">Agenda</span>
