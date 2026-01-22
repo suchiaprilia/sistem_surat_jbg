@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Disposisi;
+use App\Models\JenisSurat;
 
 class SuratMasuk extends Model
 {
@@ -26,5 +28,10 @@ class SuratMasuk extends Model
     public function jenisSurat()
     {
         return $this->belongsTo(JenisSurat::class, 'id_jenis_surat', 'id_jenis_surat');
+    }
+
+    public function disposisi()
+    {
+        return $this->hasMany(Disposisi::class, 'surat_masuk_id');
     }
 }

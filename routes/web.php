@@ -55,3 +55,4 @@ Route::resource('jenis-surat', JenisSuratController::class)->names([
 // =======================
 // Pencarian Surat
 Route::get('/search', [SearchController::class, 'index'])->name('search');
+

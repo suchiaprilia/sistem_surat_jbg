@@ -6,25 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up()
-{
-    Schema::table('surat_masuks', function (Blueprint $table) {
-        $table->unsignedBigInteger('id_jenis_surat')->nullable()->after('subject');
-        $table->foreign('id_jenis_surat')
-              ->references('id_jenis_surat')
-              ->on('jenis_surat')
-              ->onDelete('set null');
-    });
-}
+    public function up(): void
+    {
+        // hanya tambah kolom jika belum ada
+        if (!Schema::hasColumn('surat_masuks', 'id_jenis_surat')) {
+            Schema::table('surat_masuks', function (Blueprint $table) {
+                $table->unsignedBigInteger('id_jenis_surat')
+                      ->nullable()
+                      ->after('subject');
+            });
+        }
 
-public function down()
-{
-    Schema::table('surat_masuks', function (Blueprint $table) {
-        $table->dropForeign(['id_jenis_surat']);
-        $table->dropColumn('id_jenis_surat');
-    });
-}
+        // ❌ JANGAN BUAT FOREIGN KEY DI SINI
+        // foreign key SUDAH dibuat di migration lain
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasColumn('surat_masuks', 'id_jenis_surat')) {
+            Schema::table('surat_masuks', function (Blueprint $table) {
+                $table->dropColumn('id_jenis_surat');
+            });
+        }
+    }
 };
