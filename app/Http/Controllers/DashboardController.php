@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
+use App\Models\Agenda; // ✅ tambah ini
 
 class DashboardController extends Controller
 {
@@ -13,17 +14,29 @@ class DashboardController extends Controller
     {
         $today = now()->toDateString();
 
+        // ✅ ambil agenda hari ini (maks 5)
+        $agenda_hari_ini = Agenda::whereDate('tanggal_mulai', $today)
+            ->orderBy('tanggal_mulai', 'asc')
+            ->take(5)
+            ->get();
+
+        // ✅ (opsional) ambil agenda terdekat mulai dari sekarang (next 5)
+        $agenda_terdekat = Agenda::where('tanggal_mulai', '>=', now())
+            ->orderBy('tanggal_mulai', 'asc')
+            ->take(5)
+            ->get();
+
         // === STATISTIK TANPA STATUS ===
         $stats = [
             'masuk_hari_ini' => SuratMasuk::whereDate('tanggal_terima', $today)->count(),
             'keluar_hari_ini' => SuratKeluar::whereDate('date', $today)->count(),
-            'pending' => SuratMasuk::count(), // ← semua surat dianggap "pending"
-            'urgent' => 0, // tetap 0 karena belum ada deadline
+            'pending' => SuratMasuk::count(),
+            'urgent' => 0,
             'terlambat' => 0,
             'urgent_24j' => 0,
             'total_masuk' => SuratMasuk::count(),
             'total_keluar' => SuratKeluar::count(),
-            'efisiensi' => 0, // tidak bisa dihitung tanpa status
+            'efisiensi' => 0,
             'rata_waktu' => 0,
             'digital' => 0,
             'persen_digital' => 0,
@@ -64,7 +77,9 @@ class DashboardController extends Controller
             'chartMasuk',
             'chartKeluar',
             'jenisLabels',
-            'jenisData'
+            'jenisData',
+            'agenda_hari_ini',     // ✅ tambah ini
+            'agenda_terdekat'      // ✅ tambah ini (opsional)
         ));
     }
 }

@@ -208,6 +208,48 @@
             </div>
         </div>
     </div>
+
+    <!-- ✅ TABEL AGENDA HARI INI (DITAMBAHKAN) -->
+    <div class="col-sm-12">
+        <div class="card table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Agenda Hari Ini</h5>
+                <a href="{{ url('/agenda?range=today') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+            </div>
+
+            <div class="card-body p-0">
+                @if(isset($agenda_hari_ini) && $agenda_hari_ini->count())
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Jam</th>
+                                    <th>Judul</th>
+                                    <th>Lokasi</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($agenda_hari_ini as $a)
+                                    <tr>
+                                        <td>{{ \Carbon\Carbon::parse($a->tanggal_mulai)->format('H:i') }}</td>
+                                        <td><strong>{{ $a->judul }}</strong></td>
+                                        <td>{{ $a->lokasi ?? '-' }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ $a->status }}</span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-3 text-center text-muted">Tidak ada agenda hari ini</div>
+                @endif
+            </div>
+        </div>
+    </div>
+
 </div>
 <!-- [ Main Content ] end -->
 
