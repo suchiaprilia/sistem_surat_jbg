@@ -9,7 +9,32 @@ use Illuminate\Http\Request;
 
 class DisposisiController extends Controller
 {
-    // tampilkan form disposisi
+    /**
+     * =========================
+     * INBOX DISPOSISI (DEV MODE)
+     * =========================
+     * NOTE:
+     * - Belum pakai login / auth
+     * - karyawan_id masih MANUAL
+     */
+    public function index()
+    {
+        // 🔴 GANTI ANGKA INI SESUAI id_karyawan DI DATABASE
+        $karyawanId = 1;
+
+        $disposisis = Disposisi::with('suratMasuk')
+            ->where('ke_karyawan_id', $karyawanId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('disposisi.index', compact('disposisis'));
+    }
+
+    /**
+     * =========================
+     * FORM KIRIM DISPOSISI
+     * =========================
+     */
     public function create($suratMasukId)
     {
         $surat = SuratMasuk::findOrFail($suratMasukId);
@@ -18,7 +43,11 @@ class DisposisiController extends Controller
         return view('disposisi.create', compact('surat', 'karyawans'));
     }
 
-    // simpan disposisi
+    /**
+     * =========================
+     * SIMPAN DISPOSISI (DEV MODE)
+     * =========================
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -30,13 +59,14 @@ class DisposisiController extends Controller
 
         Disposisi::create([
             'surat_masuk_id'   => $request->surat_masuk_id,
-            'dari_karyawan_id' => auth()->user()->karyawan_id ?? null,
+            'dari_karyawan_id' => 1, // 🔴 DEV MODE (sementara)
             'ke_karyawan_id'   => $request->ke_karyawan_id,
             'instruksi'        => $request->instruksi,
             'batas_waktu'      => $request->batas_waktu,
             'status'           => 'baru',
         ]);
 
-        return redirect()->back()->with('success', 'Disposisi berhasil dibuat');
+        return redirect()->route('disposisi.index')
+            ->with('success', 'Disposisi berhasil dikirim');
     }
 }

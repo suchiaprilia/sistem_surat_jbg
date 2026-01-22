@@ -64,6 +64,13 @@
                             <span class="pc-micon"><i class="ti ti-mail"></i></span>
                             <span class="pc-mtext">Surat Masuk</span>
                         </a>
+                        <li class="pc-item">
+                        <a href="{{ route('disposisi.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-inbox"></i></span>
+                            <span class="pc-mtext">Disposisi Saya</span>
+                        </a>
+                    </li>
+
                     </li>
                     <li class="pc-item">
                         <a href="{{ route('surat-keluar.index') }}" class="pc-link">
