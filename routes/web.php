@@ -56,3 +56,14 @@ Route::resource('jenis-surat', JenisSuratController::class)->names([
 // =======================
 // Pencarian Surat
 Route::get('/search', [SearchController::class, 'index'])->name('search');
+
+//agenda
+Route::prefix('agenda')->group(function () {
+    Route::get('/', [AgendaController::class, 'index'])->name('agenda.index');
+    Route::post('/', [AgendaController::class, 'store'])->name('agenda.store');
+    Route::get('/{agenda}', [AgendaController::class, 'show'])->name('agenda.show');
+    Route::put('/{agenda}', [AgendaController::class, 'update'])->name('agenda.update');
+    Route::delete('/{agenda}', [AgendaController::class, 'destroy'])->name('agenda.destroy');
+
+    Route::post('/{agenda}/done', [AgendaController::class, 'markDone'])->name('agenda.done');
+});
