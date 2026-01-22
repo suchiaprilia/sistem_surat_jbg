@@ -10,6 +10,7 @@ use App\Http\Controllers\JenisSuratController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RekapSuratController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\AgendaController;
 
 // =======================
 // HALAMAN DASHBOARD
@@ -55,4 +56,3 @@ Route::resource('jenis-surat', JenisSuratController::class)->names([
 // =======================
 // Pencarian Surat
 Route::get('/search', [SearchController::class, 'index'])->name('search');
-
