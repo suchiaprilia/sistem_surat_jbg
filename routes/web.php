@@ -78,6 +78,8 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
     Route::post('/store', [DisposisiController::class, 'store'])->name('store');
     Route::get('/{id}/teruskan', [DisposisiController::class, 'forward'])
     ->name('teruskan');
+    Route::get('/surat/{surat}/riwayat', [DisposisiController::class, 'riwayat'])
+    ->name('riwayat');
 
     // UPDATE STATUS DISPOSISI
     Route::post('/{id}/dibaca', [DisposisiController::class, 'markRead'])->name('dibaca');

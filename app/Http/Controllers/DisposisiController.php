@@ -132,4 +132,24 @@ class DisposisiController extends Controller
 
         return view('disposisi.forward', compact('disposisi', 'karyawans'));
     }
+
+        /**
+     * =========================
+     * RIWAYAT DISPOSISI PER SURAT
+     * =========================
+     */
+    public function riwayat($suratId)
+    {
+        $disposisis = Disposisi::with(['dari', 'ke'])
+            ->where('surat_masuk_id', $suratId)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $surat = SuratMasuk::findOrFail($suratId);
+
+        return view('disposisi.riwayat', compact('disposisis', 'surat'));
+    }
+
+
 }
+

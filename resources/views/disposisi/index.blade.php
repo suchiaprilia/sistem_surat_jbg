@@ -46,8 +46,6 @@
                                     <span class="badge bg-warning">DIBACA</span>
                                 @elseif ($disposisi->status == 'selesai')
                                     <span class="badge bg-success">SELESAI</span>
-                                @else
-                                    <span class="badge bg-dark">UNKNOWN</span>
                                 @endif
                             </td>
 
@@ -58,7 +56,7 @@
                                     <form action="{{ route('disposisi.dibaca', $disposisi->id) }}"
                                           method="POST" style="display:inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-info mb-1">
+                                        <button class="btn btn-sm btn-info mb-1">
                                             Dibaca
                                         </button>
                                     </form>
@@ -69,19 +67,25 @@
                                     <form action="{{ route('disposisi.selesai', $disposisi->id) }}"
                                           method="POST" style="display:inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-success mb-1">
+                                        <button class="btn btn-sm btn-success mb-1">
                                             Selesai
                                         </button>
                                     </form>
                                 @endif
 
-                                {{-- TERUSKAN DISPOSISI --}}
+                                {{-- Teruskan --}}
                                 @if ($disposisi->status != 'selesai')
                                     <a href="{{ route('disposisi.teruskan', $disposisi->id) }}"
                                        class="btn btn-sm btn-warning mb-1">
                                         Teruskan
                                     </a>
                                 @endif
+
+                                {{-- Riwayat --}}
+                                <a href="{{ route('disposisi.riwayat', $disposisi->surat_masuk_id) }}"
+                                   class="btn btn-sm btn-dark mb-1">
+                                    Riwayat
+                                </a>
                             </td>
 
                             <td>{{ $disposisi->created_at->format('d-m-Y') }}</td>
