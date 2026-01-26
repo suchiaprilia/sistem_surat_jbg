@@ -48,42 +48,49 @@
                     <img src="{{ asset('gradient/assets/images/logojbg2.png') }}" alt="Logo JBG" class="logo-lg" style="height: 50px; width: auto;" />
                 </a>
             </div>
+
             <div class="navbar-content">
                 <ul class="pc-navbar">
+
                     <li class="pc-item pc-caption">
                         <label>Navigation</label>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('dashboard') }}" class="pc-link">
                             <span class="pc-micon"><i class="ph ph-gauge"></i></span>
                             <span class="pc-mtext">Dashboard</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('surat-masuk.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-mail"></i></span>
                             <span class="pc-mtext">Surat Masuk</span>
                         </a>
-                        <li class="pc-item">
+                    </li>
+
+                    <li class="pc-item">
                         <a href="{{ route('disposisi.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-inbox"></i></span>
                             <span class="pc-mtext">Disposisi Saya</span>
                         </a>
                     </li>
 
-                    </li>
                     <li class="pc-item">
                         <a href="{{ route('surat-keluar.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-send"></i></span>
                             <span class="pc-mtext">Surat Keluar</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('rekap-surat') }}" class="pc-link {{ request()->is('rekap-surat') ? 'active' : '' }}">
                             <span class="pc-micon"><i class="ti ti-file-text"></i></span>
                             <span class="pc-mtext">Rekap Surat</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ url('/agenda') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-calendar"></i></span>
@@ -95,46 +102,54 @@
                         <label>Master</label>
                         <i class="ph ph-folder"></i>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('divisi.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-building"></i></span>
                             <span class="pc-mtext">Divisi</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('jabatan.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-id"></i></span>
                             <span class="pc-mtext">Jabatan</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('karyawan.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="ti ti-users"></i></span>
                             <span class="pc-mtext">Karyawan</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="{{ route('jenis-surat.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="fas fa-tags"></i></span>
                             <span class="pc-mtext">Jenis Surat</span>
                         </a>
                     </li>
+
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>
                     </li>
+
                     <li class="pc-item">
                         <a href="/gradient/pages/login-v1.html" target="_blank" class="pc-link">
                             <span class="pc-micon"><i class="ph ph-lock"></i></span>
                             <span class="pc-mtext">Login</span>
                         </a>
                     </li>
+
                     <li class="pc-item">
                         <a href="/gradient/pages/register-v1.html" target="_blank" class="pc-link">
                             <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
                             <span class="pc-mtext">Register</span>
                         </a>
                     </li>
+
                 </ul>
             </div>
         </div>
@@ -144,38 +159,45 @@
     <!-- [ Header Topbar ] start -->
     <header class="pc-header">
         <div class="header-wrapper">
+
             <div class="m-header">
                 <a href="{{ route('dashboard') }}" class="b-brand text-primary">
                     <img src="{{ asset('gradient/assets/images/logojbg2.png') }}" alt="Logo JBG" class="logo-lg" style="height: 50px; width: auto;" />
                 </a>
             </div>
+
             <div class="me-auto pc-mob-drp">
                 <ul class="list-unstyled">
+
                     <li class="pc-h-item pc-sidebar-collapse">
                         <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
                             <i class="ph ph-list"></i>
                         </a>
                     </li>
+
                     <li class="pc-h-item pc-sidebar-popup">
                         <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
                             <i class="ph ph-list"></i>
                         </a>
                     </li>
+
                     <li class="dropdown pc-h-item">
-                    <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                        <i class="ph ph-magnifying-glass"></i>
-                    </a>
-                    <div class="dropdown-menu pc-h-dropdown drp-search">
-                        <form class="px-3" method="GET" action="{{ route('search') }}">
-                            <div class="form-group mb-0 d-flex align-items-center">
-                                <input type="search" name="q" class="form-control border-0 shadow-none" placeholder="Cari surat..." />
-                                <button type="submit" class="btn btn-light-secondary btn-search">Cari</button>
-                            </div>
-                        </form>
-                    </div>
-                </li>
+                        <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                            <i class="ph ph-magnifying-glass"></i>
+                        </a>
+                        <div class="dropdown-menu pc-h-dropdown drp-search">
+                            <form class="px-3" method="GET" action="{{ route('search') }}">
+                                <div class="form-group mb-0 d-flex align-items-center">
+                                    <input type="search" name="q" class="form-control border-0 shadow-none" placeholder="Cari surat..." />
+                                    <button type="submit" class="btn btn-light-secondary btn-search">Cari</button>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+
                 </ul>
             </div>
+
             <div class="ms-auto">
                 <ul class="list-unstyled">
                     <li class="dropdown pc-h-item header-user-profile">
@@ -209,6 +231,7 @@
                     </li>
                 </ul>
             </div>
+
         </div>
     </header>
     <!-- [ Header ] end -->
@@ -265,17 +288,21 @@
     </script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.querySelector('.drp-search input[type="search"]');
-        if (searchInput) {
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.form.submit();
-                }
-            });
-        }
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.drp-search input[type="search"]');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.form.submit();
+                    }
+                });
+            }
+        });
+    </script>
+
+    {{-- ✅ INI YANG PENTING: supaya @push('scripts') jalan --}}
+    @stack('scripts')
+
 </body>
 </html>

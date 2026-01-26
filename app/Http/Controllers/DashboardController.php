@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
-use App\Models\Agenda; // ✅ tambah ini
+use App\Models\Agenda;
 
 class DashboardController extends Controller
 {
@@ -26,49 +26,68 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // ✅ ARSIP DIGITAL (sederhana): surat yang punya file upload
+        $digitalMasuk  = SuratMasuk::whereNotNull('file_surat')->count();
+        $digitalKeluar = SuratKeluar::whereNotNull('file_scan')->count();
+        $totalDigital  = $digitalMasuk + $digitalKeluar;
+
+        $totalAll = SuratMasuk::count() + SuratKeluar::count();
+        $persenDigital = $totalAll > 0 ? round(($totalDigital / $totalAll) * 100, 1) : 0;
+
         // === STATISTIK TANPA STATUS ===
         $stats = [
-            'masuk_hari_ini' => SuratMasuk::whereDate('tanggal_terima', $today)->count(),
-            'keluar_hari_ini' => SuratKeluar::whereDate('date', $today)->count(),
-            'pending' => SuratMasuk::count(),
-            'urgent' => 0,
-            'terlambat' => 0,
-            'urgent_24j' => 0,
-            'total_masuk' => SuratMasuk::count(),
-            'total_keluar' => SuratKeluar::count(),
-            'efisiensi' => 0,
-            'rata_waktu' => 0,
-            'digital' => 0,
-            'persen_digital' => 0,
+            'masuk_hari_ini'   => SuratMasuk::whereDate('tanggal_terima', $today)->count(),
+            'keluar_hari_ini'  => SuratKeluar::whereDate('date', $today)->count(),
+            'pending'          => SuratMasuk::count(),
+            'urgent'           => 0,
+            'terlambat'        => 0,
+            'urgent_24j'       => 0,
+            'total_masuk'      => SuratMasuk::count(),
+            'total_keluar'     => SuratKeluar::count(),
+            'efisiensi'        => 0,
+            'rata_waktu'       => 0,
+
+            // ✅ aktifkan arsip digital
+            'digital'          => $totalDigital,
+            'persen_digital'   => $persenDigital,
         ];
 
         // === Tampilkan 5 surat terbaru (berdasarkan tanggal_terima) ===
         $surat_pending = SuratMasuk::orderBy('tanggal_terima', 'desc')
-                                   ->take(5)
-                                   ->get();
+            ->take(5)
+            ->get();
 
         // === CHART: 6 BULAN TERAKHIR ===
         $chartLabels = [];
-        $chartMasuk = [];
+        $chartMasuk  = [];
         $chartKeluar = [];
 
         for ($i = 5; $i >= 0; $i--) {
             $month = Carbon::now()->subMonths($i);
             $year = $month->year;
             $monthNum = $month->month;
+
             $chartLabels[] = $month->format('M');
 
             $chartMasuk[] = SuratMasuk::whereYear('tanggal_terima', $year)
-                                      ->whereMonth('tanggal_terima', $monthNum)
-                                      ->count();
+                ->whereMonth('tanggal_terima', $monthNum)
+                ->count();
 
             $chartKeluar[] = SuratKeluar::whereYear('date', $year)
-                                        ->whereMonth('date', $monthNum)
-                                        ->count();
+                ->whereMonth('date', $monthNum)
+                ->count();
         }
 
-        $jenisLabels = ['Undangan', 'Laporan', 'Permohonan'];
-        $jenisData = [30, 45, 25];
+        // ✅ PIE CHART: Distribusi Jenis Surat (REAL dari database)
+        $jenisQuery = SuratMasuk::with('jenisSurat')
+            ->get()
+            ->groupBy(function ($s) {
+                return $s->jenisSurat->jenis_surat ?? 'Lainnya';
+            })
+            ->map->count();
+
+        $jenisLabels = $jenisQuery->keys()->values();
+        $jenisData   = $jenisQuery->values()->values();
 
         return view('index', compact(
             'stats',
@@ -78,8 +97,8 @@ class DashboardController extends Controller
             'chartKeluar',
             'jenisLabels',
             'jenisData',
-            'agenda_hari_ini',     // ✅ tambah ini
-            'agenda_terdekat'      // ✅ tambah ini (opsional)
+            'agenda_hari_ini',
+            'agenda_terdekat'
         ));
     }
 }

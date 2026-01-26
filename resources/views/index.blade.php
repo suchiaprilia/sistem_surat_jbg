@@ -68,7 +68,10 @@
                 <h5>Statistik Surat (6 Bulan Terakhir)</h5>
             </div>
             <div class="card-body">
-                <canvas id="suratChart" height="100"></canvas>
+                {{-- ✅ FIX HEIGHT CHART --}}
+                <div style="height:320px;">
+                    <canvas id="suratChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -80,7 +83,10 @@
                 <h5>Distribusi Jenis Surat</h5>
             </div>
             <div class="card-body">
-                <canvas id="jenisSuratChart" height="120"></canvas>
+                {{-- ✅ FIX HEIGHT CHART --}}
+                <div style="height:320px;">
+                    <canvas id="jenisSuratChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -151,6 +157,7 @@
         </div>
     </div>
 
+    {{-- ✅ Arsip Digital (SUDAH AKTIF) --}}
     <div class="col-md-4 col-sm-12">
         <div class="card statistics-card-1 bg-brand-color-1">
             <div class="card-body">
@@ -158,12 +165,22 @@
                 <div class="d-flex align-items-center justify-content-between mb-3 drp-div">
                     <h6 class="mb-0 text-white">Arsip Digital</h6>
                 </div>
+
                 <div class="d-flex align-items-center mt-3">
-                    <h3 class="text-white f-w-300 d-flex align-items-center m-b-0">—</h3>
+                    <h3 class="text-white f-w-300 d-flex align-items-center m-b-0">
+                        {{ $stats['digital'] ?? 0 }}
+                    </h3>
                 </div>
-                <p class="text-white text-opacity-75 mb-2 text-sm mt-3">Belum diaktifkan</p>
+
+                <p class="text-white text-opacity-75 mb-2 text-sm mt-3">
+                    {{ $stats['persen_digital'] ?? 0 }}% surat sudah diarsipkan
+                </p>
+
                 <div class="progress" style="height: 7px">
-                    <div class="progress-bar bg-white" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-white" role="progressbar"
+                        style="width: {{ $stats['persen_digital'] ?? 0 }}%"
+                        aria-valuenow="{{ $stats['persen_digital'] ?? 0 }}"
+                        aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
         </div>
@@ -209,7 +226,7 @@
         </div>
     </div>
 
-    <!-- ✅ TABEL AGENDA HARI INI (DITAMBAHKAN) -->
+    <!-- ✅ TABEL AGENDA HARI INI -->
     <div class="col-sm-12">
         <div class="card table-card">
             <div class="card-header d-flex justify-content-between align-items-center">

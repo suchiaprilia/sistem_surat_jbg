@@ -6,37 +6,39 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-  public function up(): void
-{
- Schema::create('surat_keluars', function (Blueprint $table) {
-    $table->id('id_surat_keluar');
-    $table->string('no_surat_keluar');
-    $table->string('destination');
-    $table->string('subject');
-    $table->unsignedBigInteger('id_user')->nullable();  // sementara nullable
-    $table->date('date');
-    $table->string('file_scan')->nullable();
-    $table->string('requested_by')->nullable();
-    $table->string('signed_by')->nullable();
-    $table->unsignedBigInteger('id_number_surat')->nullable(); // sementara nullable
-    $table->timestamps();
+    public function up(): void
+    {
+        Schema::create('surat_keluars', function (Blueprint $table) {
+            $table->id('id_surat_keluar');
 
-    // FOREIGN KEY DIMATIKAN DULU
-    // $table->foreign('id_user')->references('id_user')->on('user')->onDelete('cascade');
-    // $table->foreign('id_number_surat')->references('id_number_surat')->on('number_surats')->onDelete('cascade');
-});
+            $table->unsignedBigInteger('id_user')->nullable();
 
-}
+            $table->date('date');
+            $table->string('no_surat_keluar'); // contoh: 388/AH/JBG/IX/2025
 
+            $table->string('destination');
+            $table->string('subject');
 
-    /**
-     * Reverse the migrations.
-     */
+            $table->unsignedBigInteger('id_number_surat')->nullable(); // relasi ke nomor_surats
+
+            $table->string('file_scan')->nullable();
+            $table->string('requested_by')->nullable();
+            $table->string('signed_by')->nullable();
+
+            // kalau kamu pakai jenis surat juga:
+            $table->unsignedBigInteger('id_jenis_surat')->nullable();
+
+            $table->timestamps();
+
+            // index biar cepat
+            $table->index(['date']);
+            $table->index(['id_user']);
+            $table->index(['id_number_surat']);
+        });
+    }
+
     public function down(): void
     {
-        Schema::dropIfExists('surat_keluar');
+        Schema::dropIfExists('surat_keluars');
     }
 };

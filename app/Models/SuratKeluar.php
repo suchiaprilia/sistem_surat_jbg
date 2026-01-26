@@ -13,17 +13,22 @@ class SuratKeluar extends Model
     protected $primaryKey = 'id_surat_keluar';
 
     protected $fillable = [
+        'id_user',
+        'date',
         'no_surat_keluar',
         'destination',
         'subject',
-        'date',
+        'id_number_surat',
         'file_scan',
         'requested_by',
         'signed_by',
-        'id_user',
-        'id_number_surat',
-        'id_jenis_surat'
+        'id_jenis_surat',
     ];
+
+    public function nomorSurat()
+    {
+        return $this->belongsTo(NomorSurat::class, 'id_number_surat', 'id');
+    }
 
     public function jenisSurat()
     {

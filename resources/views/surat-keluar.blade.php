@@ -28,15 +28,13 @@
             </div>
             <div class="card-body">
 
-                <!-- Alert Success -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
                         {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
 
-                <!-- Tabel Data -->
                 <div class="table-responsive">
                     <table class="table table-hover table-striped">
                         <thead>
@@ -46,7 +44,9 @@
                                 <th>Tujuan</th>
                                 <th>Subject</th>
                                 <th>Tanggal</th>
-                                <th>Jenis</th> <!-- Kolom Jenis -->
+                                <th>Requested By</th>
+                                <th>Signed By</th>
+                                <th>File</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -58,88 +58,142 @@
                                     <td>{{ $item->destination }}</td>
                                     <td>{{ $item->subject }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
-                                    <td>{{ $item->jenisSurat ? $item->jenisSurat->jenis_surat : '-' }}</td> <!-- Tampilkan Jenis -->
+                                    <td>{{ $item->requested_by ?? '-' }}</td>
+                                    <td>{{ $item->signed_by ?? '-' }}</td>
+
+                                    {{-- ✅ Kolom File: tombol lihat tetap disini --}}
                                     <td>
-                                        <button
-                                            class="btn btn-sm btn-warning btn-edit"
-                                            data-id="{{ $item->id_surat_keluar }}"
-                                            data-no="{{ $item->no_surat_keluar }}"
-                                            data-destination="{{ $item->destination }}"
-                                            data-subject="{{ $item->subject }}"
-                                            data-date="{{ $item->date }}"
-                                            data-jenis-id="{{ $item->id_jenis_surat }}"> <!-- Untuk Edit -->
-                                            Edit
-                                        </button>
-                                        <form action="{{ route('surat-keluar.destroy', $item->id_surat_keluar) }}" method="POST" style="display:inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">Hapus</button>
-                                        </form>
+                                        @if($item->file_scan)
+                                            <a class="btn btn-sm btn-outline-primary" target="_blank" href="{{ asset('storage/'.$item->file_scan) }}">
+                                                Lihat
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    {{-- ✅ Kolom Aksi: dropdown cuma Edit + Hapus --}}
+                                    <td class="text-nowrap">
+                                        <div class="dropdown position-static">
+                                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                ⋮
+                                            </button>
+
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {{-- Edit --}}
+                                                <li>
+                                                    <button
+                                                        class="dropdown-item btn-edit"
+                                                        type="button"
+                                                        data-id="{{ $item->id_surat_keluar }}"
+                                                        data-destination="{{ $item->destination }}"
+                                                        data-subject="{{ $item->subject }}"
+                                                        data-date="{{ $item->date }}"
+                                                        data-requested="{{ $item->requested_by }}"
+                                                        data-signed="{{ $item->signed_by }}"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </li>
+
+                                                <li><hr class="dropdown-divider"></li>
+
+                                                {{-- Hapus --}}
+                                                <li>
+                                                    <form action="{{ route('surat-keluar.destroy', $item->id_surat_keluar) }}"
+                                                          method="POST"
+                                                          onsubmit="return confirm('Hapus data ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            Hapus
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">Belum ada surat keluar.</td> <!-- Ubah colspan jadi 7 -->
+                                    <td colspan="9" class="text-center">Belum ada surat keluar.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Form Tambah/Edit -->
-<div class="modal fade" id="suratModal" tabindex="-1" aria-labelledby="suratModalLabel" aria-hidden="true">
+<div class="modal fade" id="suratModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="suratModalLabel">Tambah Surat Keluar</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
-                <form id="suratForm" action="{{ route('surat-keluar.store') }}" method="POST">
+                <form id="suratForm" action="{{ route('surat-keluar.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
                     <input type="hidden" name="id_surat_keluar" id="id_surat_keluar">
                     <input type="hidden" name="id_user" value="1">
-                    <input type="hidden" name="id_number_surat" value="1">
 
                     <div class="mb-3">
-                        <label for="no_surat_keluar" class="form-label">No Surat</label>
-                        <input type="text" class="form-control" name="no_surat_keluar" id="no_surat_keluar" placeholder="Nomor Surat" required>
+                        <label class="form-label">No Surat (Otomatis)</label>
+                        <input type="text" class="form-control" placeholder="Dibuat otomatis saat disimpan" readonly>
                     </div>
+
                     <div class="mb-3">
-                        <label for="destination" class="form-label">Tujuan</label>
-                        <input type="text" class="form-control" name="destination" id="destination" placeholder="Tujuan" required>
+                        <label class="form-label">Kode Surat</label>
+                        <select name="kode_surat" id="kode_surat" class="form-control">
+                            <option value="AH">AH</option>
+                            <option value="UM">UM</option>
+                            <option value="SK">SK</option>
+                        </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="subject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" name="subject" id="subject" placeholder="Subjek" required>
+                        <label class="form-label">Tujuan</label>
+                        <input type="text" class="form-control" name="destination" id="destination" required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="date" class="form-label">Tanggal</label>
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" name="subject" id="subject" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal</label>
                         <input type="date" class="form-control" name="date" id="date" required>
                     </div>
 
-                    <!-- Dropdown Jenis Surat -->
                     <div class="mb-3">
-                        <label for="id_jenis_surat" class="form-label">Jenis Surat</label>
-                        <select name="id_jenis_surat" id="id_jenis_surat" class="form-control" required>
-                            <option value="">-- Pilih Jenis Surat --</option>
-                            @foreach($jenisSurat as $jenis)
-                                <option value="{{ $jenis->id_jenis_surat }}">
-                                    {{ $jenis->jenis_surat }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label class="form-label">Requested By</label>
+                        <input type="text" class="form-control" name="requested_by" id="requested_by">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Signed By</label>
+                        <input type="text" class="form-control" name="signed_by" id="signed_by">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">File Scan (opsional)</label>
+                        <input type="file" class="form-control" name="file_scan" id="file_scan">
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -147,44 +201,43 @@
 </div>
 
 <script>
-    // Tombol Tambah
-    document.getElementById('btnTambah').addEventListener('click', () => {
+document.getElementById('btnTambah').addEventListener('click', () => {
+    const modal = new bootstrap.Modal(document.getElementById('suratModal'));
+    modal.show();
+
+    document.getElementById('suratModalLabel').textContent = 'Tambah Surat Keluar';
+    document.getElementById('suratForm').action = "{{ route('surat-keluar.store') }}";
+    document.getElementById('formMethod').value = 'POST';
+    document.getElementById('suratForm').reset();
+    document.getElementById('id_surat_keluar').value = '';
+});
+
+document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', () => {
         const modal = new bootstrap.Modal(document.getElementById('suratModal'));
         modal.show();
-        document.getElementById('suratModalLabel').textContent = 'Tambah Surat Keluar';
-        document.getElementById('suratForm').action = "{{ route('surat-keluar.store') }}";
-        document.getElementById('formMethod').value = 'POST';
-        document.getElementById('suratForm').reset();
-        document.getElementById('id_surat_keluar').value = '';
-    });
 
-    // Tombol Edit
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const modal = new bootstrap.Modal(document.getElementById('suratModal'));
-            modal.show();
-            document.getElementById('suratModalLabel').textContent = 'Edit Surat Keluar';
-            document.getElementById('suratForm').action = "/surat-keluar/" + btn.dataset.id;
-            document.getElementById('formMethod').value = 'PUT';
+        document.getElementById('suratModalLabel').textContent = 'Edit Surat Keluar';
+        document.getElementById('suratForm').action = "/surat-keluar/" + btn.dataset.id;
+        document.getElementById('formMethod').value = 'PUT';
 
-            document.getElementById('id_surat_keluar').value = btn.dataset.id;
-            document.getElementById('no_surat_keluar').value = btn.dataset.no;
-            document.getElementById('destination').value = btn.dataset.destination;
-            document.getElementById('subject').value = btn.dataset.subject;
-            document.getElementById('date').value = btn.dataset.date;
-            document.getElementById('id_jenis_surat').value = btn.dataset.jenisId; // Isi dropdown saat edit
-        });
+        document.getElementById('id_surat_keluar').value = btn.dataset.id;
+        document.getElementById('destination').value = btn.dataset.destination;
+        document.getElementById('subject').value = btn.dataset.subject;
+        document.getElementById('date').value = btn.dataset.date;
+        document.getElementById('requested_by').value = btn.dataset.requested || '';
+        document.getElementById('signed_by').value = btn.dataset.signed || '';
     });
+});
 
-    // Auto-hide success alert setelah 5 detik
-    document.addEventListener('DOMContentLoaded', function() {
-        const alert = document.getElementById('successAlert');
-        if (alert) {
-            setTimeout(() => {
-                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-                bsAlert.close();
-            }, 3000);
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const alert = document.getElementById('successAlert');
+    if (alert) {
+        setTimeout(() => {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+            bsAlert.close();
+        }, 3000);
+    }
+});
 </script>
 @endsection
