@@ -88,6 +88,11 @@
                                             data-jenis-id="{{ $item->id_jenis_surat }}">
                                             Edit
                                         </button>
+                                         <!-- Tombol Disposisi -->
+                                        <a href="{{ route('disposisi.create', $item->id) }}"
+                                        class="btn btn-sm btn-info">
+                                        Disposisi
+                                        </a>
 
                                         <!-- Tombol Hapus -->
                                         <form action="{{ route('surat-masuk.destroy', $item->id) }}" method="POST" style="display:inline">
