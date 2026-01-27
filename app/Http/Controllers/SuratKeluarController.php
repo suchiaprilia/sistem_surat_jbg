@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
 use App\Models\JenisSurat;
-use App\Models\NomorSurat;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +12,8 @@ class SuratKeluarController extends Controller
 {
     public function index()
     {
-        $suratKeluar = SuratKeluar::with(['jenisSurat', 'nomorSurat'])
+        // ✅ HAPUS nomorSurat karena tabelnya sudah tidak dipakai
+        $suratKeluar = SuratKeluar::with(['jenisSurat'])
             ->orderBy('id_surat_keluar', 'desc')
             ->get();
 
@@ -22,27 +22,26 @@ class SuratKeluarController extends Controller
         return view('surat-keluar', compact('suratKeluar', 'jenisSurat'));
     }
 
-    // optional (kalau route create kepakai)
     public function create()
     {
         return $this->index();
     }
 
-    // ✅ SIMPAN (no_surat_keluar auto + simpan ke nomor_surats + upload file_scan)
+    // ✅ SIMPAN (no_surat_keluar auto + upload file_scan)
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'destination'   => 'required|string|max:255',
-            'subject'       => 'required|string|max:255',
-            'date'          => 'required|date',
-            'kode_surat'    => 'nullable|string|max:10', // default AH
-            'requested_by'  => 'nullable|string|max:255',
-            'signed_by'     => 'nullable|string|max:255',
-            'file_scan'     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120', // max 5MB
-            'id_jenis_surat'=> 'nullable|exists:jenis_surat,id_jenis_surat',
+            'destination'    => 'required|string|max:255',
+            'subject'        => 'required|string|max:255',
+            'date'           => 'required|date',
+            'kode_surat'     => 'nullable|string|max:10', // default AH
+            'requested_by'   => 'nullable|string|max:255',
+            'signed_by'      => 'nullable|string|max:255',
+            'file_scan'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'id_jenis_surat' => 'nullable|exists:jenis_surat,id_jenis_surat',
         ]);
 
-        // ===== generate nomor surat: 388/AH/JBG/IX/2025 (auto naik) =====
+        // ===== generate nomor surat: 1/AH/JBG/I/2026 =====
         $date = Carbon::parse($validated['date']);
         $tahun = $date->year;
         $bulan = (int) $date->month;
@@ -53,7 +52,7 @@ class SuratKeluarController extends Controller
         $kode = strtoupper($validated['kode_surat'] ?? 'AH');
         $instansi = 'JBG';
 
-        // reset per bulan+tahun+kode
+        // Cari nomor terakhir di bulan+tahun+kode ini
         $pattern = "%/{$kode}/{$instansi}/{$bulanRomawi}/{$tahun}";
 
         $last = SuratKeluar::where('no_surat_keluar', 'like', $pattern)
@@ -69,20 +68,15 @@ class SuratKeluarController extends Controller
 
         $noSurat = $nextUrut . "/{$kode}/{$instansi}/{$bulanRomawi}/{$tahun}";
 
-        // simpan juga ke nomor_surats (arsip)
-        $nomor = NomorSurat::firstOrCreate([
-            'nomor' => $noSurat
-        ]);
-
         // ===== upload file_scan =====
         if ($request->hasFile('file_scan')) {
             $validated['file_scan'] = $request->file('file_scan')->store('surat-keluar', 'public');
         }
 
+        // set nomor surat otomatis
         $validated['no_surat_keluar'] = $noSurat;
-        $validated['id_number_surat'] = $nomor->id;
 
-        // kalau belum ada auth, tetap hardcode
+        // kalau belum pakai login, hardcode dulu
         $validated['id_user'] = 1;
 
         SuratKeluar::create($validated);
@@ -93,7 +87,6 @@ class SuratKeluarController extends Controller
 
     public function edit($id)
     {
-        // kamu pakai modal, jadi biasanya edit tidak dipakai
         return redirect()->route('surat-keluar.index');
     }
 
@@ -103,13 +96,13 @@ class SuratKeluarController extends Controller
         $data = SuratKeluar::findOrFail($id);
 
         $validated = $request->validate([
-            'destination'   => 'required|string|max:255',
-            'subject'       => 'required|string|max:255',
-            'date'          => 'required|date',
-            'requested_by'  => 'nullable|string|max:255',
-            'signed_by'     => 'nullable|string|max:255',
-            'file_scan'     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'id_jenis_surat'=> 'nullable|exists:jenis_surat,id_jenis_surat',
+            'destination'    => 'required|string|max:255',
+            'subject'        => 'required|string|max:255',
+            'date'           => 'required|date',
+            'requested_by'   => 'nullable|string|max:255',
+            'signed_by'      => 'nullable|string|max:255',
+            'file_scan'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'id_jenis_surat' => 'nullable|exists:jenis_surat,id_jenis_surat',
         ]);
 
         // kalau upload file baru, hapus file lama
@@ -120,7 +113,7 @@ class SuratKeluarController extends Controller
             $validated['file_scan'] = $request->file('file_scan')->store('surat-keluar', 'public');
         }
 
-        // ❗ no_surat_keluar tetap (tidak diubah)
+        // ❗ nomor surat tetap, jangan diubah
         $data->update($validated);
 
         return redirect()->route('surat-keluar.index')
@@ -131,7 +124,6 @@ class SuratKeluarController extends Controller
     {
         $data = SuratKeluar::findOrFail($id);
 
-        // hapus file scan kalau ada
         if ($data->file_scan && Storage::disk('public')->exists($data->file_scan)) {
             Storage::disk('public')->delete($data->file_scan);
         }

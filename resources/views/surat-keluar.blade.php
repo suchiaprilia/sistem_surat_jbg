@@ -61,7 +61,7 @@
                                     <td>{{ $item->requested_by ?? '-' }}</td>
                                     <td>{{ $item->signed_by ?? '-' }}</td>
 
-                                    {{-- ✅ Kolom File: tombol lihat tetap disini --}}
+                                    {{-- Kolom File --}}
                                     <td>
                                         @if($item->file_scan)
                                             <a class="btn btn-sm btn-outline-primary" target="_blank" href="{{ asset('storage/'.$item->file_scan) }}">
@@ -72,7 +72,7 @@
                                         @endif
                                     </td>
 
-                                    {{-- ✅ Kolom Aksi: dropdown cuma Edit + Hapus --}}
+                                    {{-- Kolom Aksi: dropdown Edit + Hapus --}}
                                     <td class="text-nowrap">
                                         <div class="dropdown position-static">
                                             <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
@@ -87,6 +87,7 @@
                                                         class="dropdown-item btn-edit"
                                                         type="button"
                                                         data-id="{{ $item->id_surat_keluar }}"
+                                                        data-no="{{ $item->no_surat_keluar }}"
                                                         data-destination="{{ $item->destination }}"
                                                         data-subject="{{ $item->subject }}"
                                                         data-date="{{ $item->date }}"
@@ -147,7 +148,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">No Surat (Otomatis)</label>
-                        <input type="text" class="form-control" placeholder="Dibuat otomatis saat disimpan" readonly>
+                        <input type="text" class="form-control" id="preview_no_surat" placeholder="Dibuat otomatis saat disimpan" readonly>
                     </div>
 
                     <div class="mb-3">
@@ -187,6 +188,7 @@
                     <div class="mb-3">
                         <label class="form-label">File Scan (opsional)</label>
                         <input type="file" class="form-control" name="file_scan" id="file_scan">
+                        <small class="text-muted">PDF/JPG/PNG max 5MB</small>
                     </div>
 
                     <div class="modal-footer">
@@ -210,6 +212,9 @@ document.getElementById('btnTambah').addEventListener('click', () => {
     document.getElementById('formMethod').value = 'POST';
     document.getElementById('suratForm').reset();
     document.getElementById('id_surat_keluar').value = '';
+
+    // preview nomor kosong karena dibuat saat simpan
+    document.getElementById('preview_no_surat').value = '';
 });
 
 document.querySelectorAll('.btn-edit').forEach(btn => {
@@ -222,6 +227,10 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
         document.getElementById('formMethod').value = 'PUT';
 
         document.getElementById('id_surat_keluar').value = btn.dataset.id;
+
+        // ✅ tampilkan nomor surat existing (readonly)
+        document.getElementById('preview_no_surat').value = btn.dataset.no || '';
+
         document.getElementById('destination').value = btn.dataset.destination;
         document.getElementById('subject').value = btn.dataset.subject;
         document.getElementById('date').value = btn.dataset.date;
