@@ -68,14 +68,14 @@
                                     {{-- File --}}
                                     <td>
                                         @if ($item->file_surat)
-                                            <a href="{{ asset('storage/' . $item->file_surat) }}"
-                                               target="_blank"
-                                               class="btn btn-sm btn-outline-primary">
-                                                Lihat
-                                            </a>
-                                        @else
-                                            -
-                                        @endif
+                                        <a href="{{ route('surat-masuk.file', $item->id) }}"
+                                        target="_blank"
+                                        class="btn btn-sm btn-outline-primary">
+                                            Lihat
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
                                     </td>
 
                                     {{-- Aksi (Dropdown rapi seperti Surat Keluar) --}}
