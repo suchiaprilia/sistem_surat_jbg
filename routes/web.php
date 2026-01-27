@@ -87,6 +87,21 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
     Route::post('/{id}/selesai', [DisposisiController::class, 'markDone'])->name('selesai');
 });
 
+// =======================
+// NOTIFIKASI
+// =======================
+Route::get('/ajax/notifikasi-disposisi', function () {
+    $karyawanId = 1; // DEV MODE
+
+    $count = \App\Models\Disposisi::where('ke_karyawan_id', $karyawanId)
+        ->where('status', 'baru')
+        ->count();
+
+    return response()->json([
+        'count' => $count
+    ]);
+})->name('ajax.notifikasi.disposisi');
+
 
 //audit
 Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
