@@ -57,49 +57,80 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->no_surat }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_terima)->format('d-m-Y') }}</td>
+                                    <td>{{ $item->tanggal ? \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') : '-' }}</td>
+                                    <td>{{ $item->tanggal_terima ? \Carbon\Carbon::parse($item->tanggal_terima)->format('d-m-Y') : '-' }}</td>
                                     <td>{{ $item->penerima }}</td>
                                     <td>{{ $item->pengirim }}</td>
                                     <td>{{ $item->subject }}</td>
                                     <td>{{ $item->tujuan }}</td>
                                     <td>{{ $item->jenisSurat ? $item->jenisSurat->jenis_surat : '-' }}</td>
+
+                                    {{-- File --}}
                                     <td>
                                         @if ($item->file_surat)
-                                            <a href="{{ asset('storage/' . $item->file_surat) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ asset('storage/' . $item->file_surat) }}"
+                                               target="_blank"
+                                               class="btn btn-sm btn-outline-primary">
                                                 Lihat
                                             </a>
                                         @else
                                             -
                                         @endif
                                     </td>
-                                    <td>
-                                        <!-- Tombol Edit -->
-                                        <button
-                                            class="btn btn-sm btn-warning btn-edit"
-                                            data-id="{{ $item->id }}"
-                                            data-no="{{ $item->no_surat }}"
-                                            data-tanggal="{{ $item->tanggal }}"
-                                            data-tanggal_terima="{{ $item->tanggal_terima }}"
-                                            data-penerima="{{ $item->penerima }}"
-                                            data-pengirim="{{ $item->pengirim }}"
-                                            data-subject="{{ $item->subject }}"
-                                            data-tujuan="{{ $item->tujuan }}"
-                                            data-jenis-id="{{ $item->id_jenis_surat }}">
-                                            Edit
-                                        </button>
-                                         <!-- Tombol Disposisi -->
-                                        <a href="{{ route('disposisi.create', $item->id) }}"
-                                        class="btn btn-sm btn-info">
-                                        Disposisi
-                                        </a>
 
-                                        <!-- Tombol Hapus -->
-                                        <form action="{{ route('surat-masuk.destroy', $item->id) }}" method="POST" style="display:inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">Hapus</button>
-                                        </form>
+                                    {{-- Aksi (Dropdown rapi seperti Surat Keluar) --}}
+                                    <td class="text-nowrap">
+                                        <div class="dropdown position-static">
+                                            <button class="btn btn-sm btn-light border dropdown-toggle"
+                                                    type="button"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                ⋮
+                                            </button>
+
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {{-- Edit --}}
+                                                <li>
+                                                    <button
+                                                        class="dropdown-item btn-edit"
+                                                        type="button"
+                                                        data-id="{{ $item->id }}"
+                                                        data-no="{{ $item->no_surat }}"
+                                                        data-tanggal="{{ $item->tanggal }}"
+                                                        data-tanggal_terima="{{ $item->tanggal_terima }}"
+                                                        data-penerima="{{ $item->penerima }}"
+                                                        data-pengirim="{{ $item->pengirim }}"
+                                                        data-subject="{{ $item->subject }}"
+                                                        data-tujuan="{{ $item->tujuan }}"
+                                                        data-jenis-id="{{ $item->id_jenis_surat }}">
+                                                        ✏️ Edit
+                                                    </button>
+                                                </li>
+
+                                                {{-- Disposisi --}}
+                                                <li>
+                                                    <a href="{{ route('disposisi.create', $item->id) }}"
+                                                       class="dropdown-item text-info">
+                                                        📤 Disposisi
+                                                    </a>
+                                                </li>
+
+                                                <li><hr class="dropdown-divider"></li>
+
+                                                {{-- Hapus --}}
+                                                <li>
+                                                    <form action="{{ route('surat-masuk.destroy', $item->id) }}"
+                                                          method="POST"
+                                                          onsubmit="return confirm('Hapus data ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            🗑 Hapus
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -110,6 +141,7 @@
                         </tbody>
                     </table>
                 </div>
+
             </div>
         </div>
     </div>
@@ -205,7 +237,7 @@ document.getElementById('btnTambah').addEventListener('click', () => {
     document.getElementById('id_surat_masuk').value = '';
 });
 
-// Tombol Edit
+// Tombol Edit (dropdown item juga tetap class btn-edit)
 document.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', () => {
         const modal = new bootstrap.Modal(document.getElementById('suratModal'));
@@ -217,7 +249,7 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
         document.getElementById('id_surat_masuk').value = btn.dataset.id;
         document.getElementById('no_surat').value = btn.dataset.no;
         document.getElementById('tanggal').value = btn.dataset.tanggal;
-        document.getElementById('tanggal_terima').value = btn.dataset.tanggal_terima;
+        document.getElementById('tanggal_terima').value = btn.dataset.tanggalTerima;
         document.getElementById('penerima').value = btn.dataset.penerima;
         document.getElementById('pengirim').value = btn.dataset.pengirim;
         document.getElementById('subject').value = btn.dataset.subject;
