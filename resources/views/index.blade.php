@@ -88,34 +88,7 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="media align-items-center">
-                            <div class="avtar avtar-s bg-grd-primary flex-shrink-0">
-                                <i class="feather icon-file-text text-white f-20"></i>
-                            </div>
-                            <div class="media-body ms-2">
-                                <p class="mb-0 text-muted">Total Surat Masuk</p>
-                                <h6 class="mb-0">{{ $stats['total_masuk'] ?? 0 }}</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="media align-items-center">
-                            <div class="avtar avtar-s bg-grd-success flex-shrink-0">
-                                <i class="feather icon-file-plus text-white f-20"></i>
-                            </div>
-                            <div class="media-body ms-2">
-                                <p class="mb-0 text-muted">Total Surat Keluar</p>
-                                <h6 class="mb-0">{{ $stats['total_keluar'] ?? 0 }}</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- ❌ BAGIAN "Total Surat Masuk / Total Surat Keluar" KECIL SUDAH DIHAPUS SESUAI REQUEST --}}
     </div>
 
     <!-- Statistik Tambahan -->
