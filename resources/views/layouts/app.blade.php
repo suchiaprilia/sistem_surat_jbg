@@ -198,8 +198,48 @@
                 </ul>
             </div>
 
+            {{-- ✅ Blok PHP notifikasi ditempatkan tepat sebelum section ms-auto --}}
+            @php
+                use App\Http\Controllers\NotifikasiController;
+                $notifDisposisi = NotifikasiController::disposisiBaru();
+            @endphp
+
             <div class="ms-auto">
                 <ul class="list-unstyled">
+                    {{-- ✅ Dropdown Notifikasi ditempatkan SEBELUM header-user-profile --}}
+                    <li class="dropdown pc-h-item">
+                        <a class="pc-head-link dropdown-toggle arrow-none me-3"
+                           data-bs-toggle="dropdown" href="#" role="button">
+                            <i class="ph ph-bell"></i>
+
+                            @if($notifDisposisi > 0)
+                                <span class="badge bg-danger rounded-circle"
+                                      style="position:absolute; top:0; right:0; font-size: 0.75rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                                    {{ $notifDisposisi }}
+                                </span>
+                            @endif
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-end pc-h-dropdown">
+                            <div class="dropdown-header">
+                                <h6 class="m-0">Notifikasi</h6>
+                            </div>
+
+                            <div class="dropdown-body">
+                                @if($notifDisposisi > 0)
+                                    <a href="{{ route('disposisi.index') }}" class="dropdown-item">
+                                        📥 Ada {{ $notifDisposisi }} disposisi baru
+                                    </a>
+                                @else
+                                    <span class="dropdown-item text-muted">
+                                        Tidak ada disposisi baru
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </li>
+
+                    {{-- ✅ Elemen user profile tetap dipertahankan di posisi berikutnya --}}
                     <li class="dropdown pc-h-item header-user-profile">
                         <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
                             <img src="{{ asset('gradient/assets/images/user/avatar-2.jpg') }}" alt="user-image" class="user-avtar" />
@@ -301,7 +341,7 @@
         });
     </script>
 
-    {{-- ✅ INI YANG PENTING: supaya @push('scripts') jalan --}}
+    {{-- ✅ Stack scripts tetap dipertahankan --}}
     @stack('scripts')
 
 </body>
