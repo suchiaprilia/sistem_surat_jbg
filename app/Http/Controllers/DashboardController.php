@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
 use App\Models\Agenda;
+use App\Models\AuditLog;
+
 
 class DashboardController extends Controller
 {
@@ -89,6 +91,12 @@ class DashboardController extends Controller
         $jenisLabels = $jenisQuery->keys()->values();
         $jenisData   = $jenisQuery->values()->values();
 
+        // ✅ ambil 5 audit log terbaru
+        $audit_logs = AuditLog::orderBy('created_at', 'desc')
+         ->take(5)
+         ->get();
+
+
         return view('index', compact(
             'stats',
             'surat_pending',
@@ -98,7 +106,8 @@ class DashboardController extends Controller
             'jenisLabels',
             'jenisData',
             'agenda_hari_ini',
-            'agenda_terdekat'
+            'agenda_terdekat',
+            'audit_logs'
         ));
     }
 }

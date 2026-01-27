@@ -68,7 +68,6 @@
                 <h5>Statistik Surat (6 Bulan Terakhir)</h5>
             </div>
             <div class="card-body">
-                {{-- ✅ FIX HEIGHT CHART --}}
                 <div style="height:320px;">
                     <canvas id="suratChart"></canvas>
                 </div>
@@ -83,7 +82,6 @@
                 <h5>Distribusi Jenis Surat</h5>
             </div>
             <div class="card-body">
-                {{-- ✅ FIX HEIGHT CHART --}}
                 <div style="height:320px;">
                     <canvas id="jenisSuratChart"></canvas>
                 </div>
@@ -157,7 +155,7 @@
         </div>
     </div>
 
-    {{-- ✅ Arsip Digital (SUDAH AKTIF) --}}
+    {{-- ✅ Arsip Digital --}}
     <div class="col-md-4 col-sm-12">
         <div class="card statistics-card-1 bg-brand-color-1">
             <div class="card-body">
@@ -209,9 +207,7 @@
                             <tr>
                                 <td><strong>{{ $s->no_surat ?? '-' }}</strong></td>
                                 <td>{{ Str::limit($s->subject ?? '-', 30) }}</td>
-                                <td>
-                                    {{ $s->tanggal_terima ? \Carbon\Carbon::parse($s->tanggal_terima)->format('d M Y') : '-' }}
-                                </td>
+                                <td>{{ $s->tanggal_terima ? \Carbon\Carbon::parse($s->tanggal_terima)->format('d M Y') : '-' }}</td>
                                 <td>{{ $s->pengirim ?? '-' }}</td>
                             </tr>
                             @empty
@@ -222,6 +218,58 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ✅ TABEL AUDIT LOG TERBARU --}}
+    <div class="col-sm-12">
+        <div class="card table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Aktivitas Terbaru</h5>
+                <a href="{{ url('/audit-log') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+            </div>
+
+            <div class="card-body p-0">
+                @if(isset($audit_logs) && $audit_logs->count())
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Modul</th>
+                                    <th>Aksi</th>
+                                    <th>Keterangan</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($audit_logs as $log)
+                                    <tr>
+                                        <td>{{ \Carbon\Carbon::parse($log->created_at)->format('d-m-Y H:i') }}</td>
+                                        <td>{{ $log->modul ?? '-' }}</td>
+                                        <td>
+                                            @php $aksi = strtolower($log->aksi ?? ''); @endphp
+                                            @if($aksi === 'create')
+                                                <span class="badge bg-success">Create</span>
+                                            @elseif($aksi === 'update')
+                                                <span class="badge bg-primary">Update</span>
+                                            @elseif($aksi === 'delete')
+                                                <span class="badge bg-danger">Delete</span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ $log->aksi ?? '-' }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $log->keterangan ?? '-' }}</td>
+                                        <td>{{ $log->ip ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-3 text-center text-muted">Belum ada aktivitas</div>
+                @endif
             </div>
         </div>
     </div>
@@ -252,9 +300,7 @@
                                         <td>{{ \Carbon\Carbon::parse($a->tanggal_mulai)->format('H:i') }}</td>
                                         <td><strong>{{ $a->judul }}</strong></td>
                                         <td>{{ $a->lokasi ?? '-' }}</td>
-                                        <td>
-                                            <span class="badge bg-secondary">{{ $a->status }}</span>
-                                        </td>
+                                        <td><span class="badge bg-secondary">{{ $a->status }}</span></td>
                                     </tr>
                                 @endforeach
                             </tbody>

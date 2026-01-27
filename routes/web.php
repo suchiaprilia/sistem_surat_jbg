@@ -12,6 +12,7 @@ use App\Http\Controllers\RekapSuratController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\DisposisiController;
+use App\Http\Controllers\AuditLogController;
 
 // =======================
 // HALAMAN DASHBOARD
@@ -85,3 +86,8 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
     Route::post('/{id}/dibaca', [DisposisiController::class, 'markRead'])->name('dibaca');
     Route::post('/{id}/selesai', [DisposisiController::class, 'markDone'])->name('selesai');
 });
+
+
+//audit
+Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
 use App\Models\JenisSurat;
+use App\Models\AuditLog; // ✅ tambah audit log
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,6 @@ class SuratKeluarController extends Controller
 {
     public function index()
     {
-        // ✅ HAPUS nomorSurat karena tabelnya sudah tidak dipakai
         $suratKeluar = SuratKeluar::with(['jenisSurat'])
             ->orderBy('id_surat_keluar', 'desc')
             ->get();
@@ -52,7 +52,6 @@ class SuratKeluarController extends Controller
         $kode = strtoupper($validated['kode_surat'] ?? 'AH');
         $instansi = 'JBG';
 
-        // Cari nomor terakhir di bulan+tahun+kode ini
         $pattern = "%/{$kode}/{$instansi}/{$bulanRomawi}/{$tahun}";
 
         $last = SuratKeluar::where('no_surat_keluar', 'like', $pattern)
@@ -73,13 +72,21 @@ class SuratKeluarController extends Controller
             $validated['file_scan'] = $request->file('file_scan')->store('surat-keluar', 'public');
         }
 
-        // set nomor surat otomatis
         $validated['no_surat_keluar'] = $noSurat;
 
         // kalau belum pakai login, hardcode dulu
         $validated['id_user'] = 1;
 
-        SuratKeluar::create($validated);
+        $created = SuratKeluar::create($validated);
+
+        // ✅ AUDIT LOG
+        AuditLog::tulis(
+            'create',
+            'surat_keluar',
+            $created->id_surat_keluar,
+            "Menambah surat keluar. No Surat: {$noSurat}",
+            'System'
+        );
 
         return redirect()->route('surat-keluar.index')
             ->with('success', "Surat keluar berhasil ditambahkan. No Surat: {$noSurat}");
@@ -113,8 +120,16 @@ class SuratKeluarController extends Controller
             $validated['file_scan'] = $request->file('file_scan')->store('surat-keluar', 'public');
         }
 
-        // ❗ nomor surat tetap, jangan diubah
         $data->update($validated);
+
+        // ✅ AUDIT LOG
+        AuditLog::tulis(
+            'update',
+            'surat_keluar',
+            $data->id_surat_keluar,
+            "Mengubah surat keluar. No Surat: {$data->no_surat_keluar}",
+            'System'
+        );
 
         return redirect()->route('surat-keluar.index')
             ->with('success', 'Data surat keluar berhasil diperbarui!');
@@ -123,6 +138,15 @@ class SuratKeluarController extends Controller
     public function destroy($id)
     {
         $data = SuratKeluar::findOrFail($id);
+
+        // ✅ AUDIT LOG (tulis dulu sebelum delete)
+        AuditLog::tulis(
+            'delete',
+            'surat_keluar',
+            $data->id_surat_keluar,
+            "Menghapus surat keluar. No Surat: {$data->no_surat_keluar}",
+            'System'
+        );
 
         if ($data->file_scan && Storage::disk('public')->exists($data->file_scan)) {
             Storage::disk('public')->delete($data->file_scan);

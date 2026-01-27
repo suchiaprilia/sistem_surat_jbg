@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
 use App\Models\JenisSurat;
+use App\Models\AuditLog; // ✅ tambah audit log
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SuratMasukController extends Controller
 {
     public function index()
     {
-        $suratMasuk = SuratMasuk::with('jenisSurat')->get(); // eager loading
+        $suratMasuk = SuratMasuk::with('jenisSurat')->get();
         $jenisSurat = JenisSurat::all();
         return view('surat-masuk', compact('suratMasuk', 'jenisSurat'));
     }
@@ -22,7 +24,6 @@ class SuratMasukController extends Controller
 
     public function store(Request $request)
     {
-        // ✅ TAMBAHKAN VALIDASI id_jenis_surat
         $validated = $request->validate([
             'no_surat' => 'required',
             'tanggal' => 'required|date',
@@ -31,8 +32,8 @@ class SuratMasukController extends Controller
             'pengirim' => 'required',
             'subject' => 'required',
             'tujuan' => 'required',
-            'id_jenis_surat' => 'required|exists:jenis_surat,id_jenis_surat', // ← INI YANG KURANG!
-            'file_surat' => 'nullable|mimes:pdf,jpg,png'
+            'id_jenis_surat' => 'required|exists:jenis_surat,id_jenis_surat',
+            'file_surat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120'
         ]);
 
         if ($request->hasFile('file_surat')) {
@@ -40,7 +41,16 @@ class SuratMasukController extends Controller
                 ->store('surat-masuk', 'public');
         }
 
-        SuratMasuk::create($validated);
+        $created = SuratMasuk::create($validated);
+
+        // ✅ AUDIT LOG
+        AuditLog::tulis(
+            'create',
+            'surat_masuk',
+            $created->id,
+            "Menambah surat masuk. No Surat: {$created->no_surat}",
+            'System'
+        );
 
         return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil ditambahkan.');
     }
@@ -48,7 +58,7 @@ class SuratMasukController extends Controller
     public function edit($id)
     {
         $item = SuratMasuk::findOrFail($id);
-        $jenisSurat = JenisSurat::all(); // kirim data jenis surat untuk dropdown
+        $jenisSurat = JenisSurat::all();
         return view('surat-masuk-edit', compact('item', 'jenisSurat'));
     }
 
@@ -56,7 +66,6 @@ class SuratMasukController extends Controller
     {
         $item = SuratMasuk::findOrFail($id);
 
-        // ✅ TAMBAHKAN VALIDASI id_jenis_surat
         $validated = $request->validate([
             'no_surat' => 'required',
             'tanggal' => 'required|date',
@@ -65,16 +74,29 @@ class SuratMasukController extends Controller
             'pengirim' => 'required',
             'subject' => 'required',
             'tujuan' => 'required',
-            'id_jenis_surat' => 'required|exists:jenis_surat,id_jenis_surat', // ← INI YANG KURANG!
-            'file_surat' => 'nullable|mimes:pdf,jpg,png'
+            'id_jenis_surat' => 'required|exists:jenis_surat,id_jenis_surat',
+            'file_surat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120'
         ]);
 
+        // kalau upload file baru, hapus file lama
         if ($request->hasFile('file_surat')) {
+            if ($item->file_surat && Storage::disk('public')->exists($item->file_surat)) {
+                Storage::disk('public')->delete($item->file_surat);
+            }
             $validated['file_surat'] = $request->file('file_surat')
                 ->store('surat-masuk', 'public');
         }
 
         $item->update($validated);
+
+        // ✅ AUDIT LOG
+        AuditLog::tulis(
+            'update',
+            'surat_masuk',
+            $item->id,
+            "Mengubah surat masuk. No Surat: {$item->no_surat}",
+            'System'
+        );
 
         return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil diperbarui.');
     }
@@ -82,7 +104,23 @@ class SuratMasukController extends Controller
     public function destroy($id)
     {
         $item = SuratMasuk::findOrFail($id);
+
+        // ✅ AUDIT LOG (tulis sebelum delete)
+        AuditLog::tulis(
+            'delete',
+            'surat_masuk',
+            $item->id,
+            "Menghapus surat masuk. No Surat: {$item->no_surat}",
+            'System'
+        );
+
+        // hapus file kalau ada
+        if ($item->file_surat && Storage::disk('public')->exists($item->file_surat)) {
+            Storage::disk('public')->delete($item->file_surat);
+        }
+
         $item->delete();
+
         return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil dihapus.');
     }
 }
