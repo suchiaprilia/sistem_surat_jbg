@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
 use App\Models\JenisSurat;
-use App\Models\AuditLog; // ✅ tambah audit log
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,12 +14,8 @@ class SuratMasukController extends Controller
     {
         $suratMasuk = SuratMasuk::with('jenisSurat')->get();
         $jenisSurat = JenisSurat::all();
-        return view('surat-masuk', compact('suratMasuk', 'jenisSurat'));
-    }
 
-    public function create()
-    {
-        return view('surat-masuk-create');
+        return view('surat-masuk', compact('suratMasuk', 'jenisSurat'));
     }
 
     public function store(Request $request)
@@ -37,13 +33,13 @@ class SuratMasukController extends Controller
         ]);
 
         if ($request->hasFile('file_surat')) {
-            $validated['file_surat'] = $request->file('file_surat')
+            $validated['file_surat'] = $request
+                ->file('file_surat')
                 ->store('surat-masuk', 'public');
         }
 
         $created = SuratMasuk::create($validated);
 
-        // ✅ AUDIT LOG
         AuditLog::tulis(
             'create',
             'surat_masuk',
@@ -52,14 +48,9 @@ class SuratMasukController extends Controller
             'System'
         );
 
-        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil ditambahkan.');
-    }
-
-    public function edit($id)
-    {
-        $item = SuratMasuk::findOrFail($id);
-        $jenisSurat = JenisSurat::all();
-        return view('surat-masuk-edit', compact('item', 'jenisSurat'));
+        return redirect()
+            ->route('surat-masuk.index')
+            ->with('success', 'Surat masuk berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -78,18 +69,18 @@ class SuratMasukController extends Controller
             'file_surat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120'
         ]);
 
-        // kalau upload file baru, hapus file lama
         if ($request->hasFile('file_surat')) {
             if ($item->file_surat && Storage::disk('public')->exists($item->file_surat)) {
                 Storage::disk('public')->delete($item->file_surat);
             }
-            $validated['file_surat'] = $request->file('file_surat')
+
+            $validated['file_surat'] = $request
+                ->file('file_surat')
                 ->store('surat-masuk', 'public');
         }
 
         $item->update($validated);
 
-        // ✅ AUDIT LOG
         AuditLog::tulis(
             'update',
             'surat_masuk',
@@ -98,14 +89,15 @@ class SuratMasukController extends Controller
             'System'
         );
 
-        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil diperbarui.');
+        return redirect()
+            ->route('surat-masuk.index')
+            ->with('success', 'Surat masuk berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $item = SuratMasuk::findOrFail($id);
 
-        // ✅ AUDIT LOG (tulis sebelum delete)
         AuditLog::tulis(
             'delete',
             'surat_masuk',
@@ -114,13 +106,36 @@ class SuratMasukController extends Controller
             'System'
         );
 
-        // hapus file kalau ada
         if ($item->file_surat && Storage::disk('public')->exists($item->file_surat)) {
             Storage::disk('public')->delete($item->file_surat);
         }
 
         $item->delete();
 
-        return redirect()->route('surat-masuk.index')->with('success', 'Surat masuk berhasil dihapus.');
+        return redirect()
+            ->route('surat-masuk.index')
+            ->with('success', 'Surat masuk berhasil dihapus.');
+    }
+
+    // ================================
+    // 🔥 METHOD UNTUK BUKA FILE (FIX 403)
+    // ================================
+    public function lihatFile($id)
+    {
+        $surat = SuratMasuk::findOrFail($id);
+
+        if (
+            !$surat->file_surat ||
+            !Storage::disk('public')->exists($surat->file_surat)
+        ) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        return response()->file(
+            storage_path('app/public/' . $surat->file_surat),
+            [
+                'Content-Type' => Storage::disk('public')->mimeType($surat->file_surat)
+            ]
+        );
     }
 }

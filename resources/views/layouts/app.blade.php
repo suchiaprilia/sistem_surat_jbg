@@ -212,12 +212,11 @@
                            data-bs-toggle="dropdown" href="#" role="button">
                             <i class="ph ph-bell"></i>
 
-                            @if($notifDisposisi > 0)
-                                <span class="badge bg-danger rounded-circle"
-                                      style="position:absolute; top:0; right:0; font-size: 0.75rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
-                                    {{ $notifDisposisi }}
-                                </span>
-                            @endif
+                            {{-- ✅ Badge dengan ID untuk AJAX update --}}
+                            <span id="notif-badge"
+                                  class="badge bg-danger rounded-circle"
+                                  style="position:absolute; top:0; right:0; display:none; font-size: 0.75rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                            </span>
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end pc-h-dropdown">
@@ -226,15 +225,11 @@
                             </div>
 
                             <div class="dropdown-body">
-                                @if($notifDisposisi > 0)
-                                    <a href="{{ route('disposisi.index') }}" class="dropdown-item">
-                                        📥 Ada {{ $notifDisposisi }} disposisi baru
-                                    </a>
-                                @else
-                                    <span class="dropdown-item text-muted">
-                                        Tidak ada disposisi baru
-                                    </span>
-                                @endif
+                                {{-- ✅ Teks dropdown dengan ID untuk AJAX update --}}
+                                <a id="notif-text"
+                                   href="{{ route('disposisi.index') }}"
+                                   class="dropdown-item">
+                                </a>
                             </div>
                         </div>
                     </li>
@@ -343,6 +338,37 @@
 
     {{-- ✅ Stack scripts tetap dipertahankan --}}
     @stack('scripts')
+
+    {{-- ✅ AJAX Polling untuk Notifikasi Disposisi --}}
+    <script>
+        function loadNotifikasiDisposisi() {
+            fetch("{{ route('ajax.notifikasi.disposisi') }}")
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notif-badge');
+                    const text  = document.getElementById('notif-text');
+
+                    if (data.count > 0) {
+                        badge.style.display = 'flex';
+                        badge.innerText = data.count;
+
+                        text.innerText = `📥 Ada ${data.count} disposisi baru`;
+                    } else {
+                        badge.style.display = 'none';
+                        text.innerText = 'Tidak ada disposisi baru';
+                    }
+                })
+                .catch(err => console.error('Error loading notifikasi:', err));
+        }
+
+        // Load pertama kali saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifikasiDisposisi();
+        });
+
+        // Polling setiap 5 detik (5000ms)
+        setInterval(loadNotifikasiDisposisi, 5000);
+    </script>
 
 </body>
 </html>
