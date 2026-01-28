@@ -118,11 +118,16 @@ class SuratMasukController extends Controller
     }
 
     // ================================
-    // 🔥 METHOD UNTUK BUKA FILE (FIX 403)
+    // 🔥 BUKA FILE + TANDAI SUDAH DIBACA
     // ================================
     public function lihatFile($id)
     {
         $surat = SuratMasuk::findOrFail($id);
+
+        // tandai sudah dibaca
+        if ($surat->is_read == 0) {
+            $surat->update(['is_read' => 1]);
+        }
 
         if (
             !$surat->file_surat ||

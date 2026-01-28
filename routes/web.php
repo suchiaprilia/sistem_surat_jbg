@@ -115,17 +115,23 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
 | NOTIFIKASI (AJAX POLLING)
 |--------------------------------------------------------------------------
 */
-Route::get('/ajax/notifikasi-disposisi', function () {
+Route::get('/ajax/notifikasi', function () {
     $karyawanId = 1; // DEV MODE
 
-    $count = \App\Models\Disposisi::where('ke_karyawan_id', $karyawanId)
+    $disposisiBaru = \App\Models\Disposisi::where('ke_karyawan_id', $karyawanId)
         ->where('status', 'baru')
         ->count();
 
+    $suratMasukBaru = \App\Models\SuratMasuk::whereDate('created_at', today())
+        ->count();
+
     return response()->json([
-        'count' => $count
+        'total' => $disposisiBaru + $suratMasukBaru,
+        'disposisi' => $disposisiBaru,
+        'surat_masuk' => $suratMasukBaru,
     ]);
-})->name('ajax.notifikasi.disposisi');
+})->name('ajax.notifikasi');
+
 
 /*
 |--------------------------------------------------------------------------

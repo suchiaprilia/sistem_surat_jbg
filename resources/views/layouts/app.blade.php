@@ -206,16 +206,17 @@
 
             <div class="ms-auto">
                 <ul class="list-unstyled">
-                    {{-- ✅ Dropdown Notifikasi ditempatkan SEBELUM header-user-profile --}}
+                    {{-- ✅ ICON LONCENG - SATU SAJA --}}
                     <li class="dropdown pc-h-item">
                         <a class="pc-head-link dropdown-toggle arrow-none me-3"
-                           data-bs-toggle="dropdown" href="#" role="button">
+                           data-bs-toggle="dropdown" href="#">
                             <i class="ph ph-bell"></i>
 
-                            {{-- ✅ Badge dengan ID untuk AJAX update --}}
                             <span id="notif-badge"
                                   class="badge bg-danger rounded-circle"
-                                  style="position:absolute; top:0; right:0; display:none; font-size: 0.75rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                                  style="position:absolute; top:0; right:0; display:none;
+                                         font-size:0.75rem; min-width:18px; height:18px;
+                                         align-items:center; justify-content:center;">
                             </span>
                         </a>
 
@@ -224,12 +225,8 @@
                                 <h6 class="m-0">Notifikasi</h6>
                             </div>
 
-                            <div class="dropdown-body">
-                                {{-- ✅ Teks dropdown dengan ID untuk AJAX update --}}
-                                <a id="notif-text"
-                                   href="{{ route('disposisi.index') }}"
-                                   class="dropdown-item">
-                                </a>
+                            <div class="dropdown-body" id="notif-list">
+                                <span class="dropdown-item text-muted">Loading...</span>
                             </div>
                         </div>
                     </li>
@@ -339,35 +336,54 @@
     {{-- ✅ Stack scripts tetap dipertahankan --}}
     @stack('scripts')
 
-    {{-- ✅ AJAX Polling untuk Notifikasi Disposisi --}}
+    {{-- ✅ SATU POLLING UNTUK SEMUA NOTIFIKASI --}}
     <script>
-        function loadNotifikasiDisposisi() {
-            fetch("{{ route('ajax.notifikasi.disposisi') }}")
-                .then(response => response.json())
+        function loadNotifikasi() {
+            fetch("{{ route('ajax.notifikasi') }}")
+                .then(res => res.json())
                 .then(data => {
                     const badge = document.getElementById('notif-badge');
-                    const text  = document.getElementById('notif-text');
+                    const list = document.getElementById('notif-list');
 
-                    if (data.count > 0) {
-                        badge.style.display = 'flex';
-                        badge.innerText = data.count;
-
-                        text.innerText = `📥 Ada ${data.count} disposisi baru`;
+                    // badge
+                    if (data.total > 0) {
+                        badge.innerText = data.total;
+                        badge.style.display = 'inline-flex';
                     } else {
                         badge.style.display = 'none';
-                        text.innerText = 'Tidak ada disposisi baru';
                     }
-                })
-                .catch(err => console.error('Error loading notifikasi:', err));
+
+                    // isi dropdown
+                    list.innerHTML = '';
+
+                    if (data.surat_masuk > 0) {
+                        list.innerHTML += `
+                            <a href="{{ route('surat-masuk.index') }}" class="dropdown-item">
+                                📥 ${data.surat_masuk} Surat Masuk Baru
+                            </a>
+                        `;
+                    }
+
+                    if (data.disposisi > 0) {
+                        list.innerHTML += `
+                            <a href="{{ route('disposisi.index') }}" class="dropdown-item">
+                                📌 ${data.disposisi} Disposisi Baru
+                            </a>
+                        `;
+                    }
+
+                    if (data.total === 0) {
+                        list.innerHTML = `
+                            <span class="dropdown-item text-muted">
+                                Tidak ada notifikasi baru
+                            </span>
+                        `;
+                    }
+                });
         }
 
-        // Load pertama kali saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            loadNotifikasiDisposisi();
-        });
-
-        // Polling setiap 5 detik (5000ms)
-        setInterval(loadNotifikasiDisposisi, 5000);
+        loadNotifikasi();
+        setInterval(loadNotifikasi, 10000);
     </script>
 
 </body>
