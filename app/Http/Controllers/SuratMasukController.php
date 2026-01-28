@@ -67,13 +67,13 @@ class SuratMasukController extends Controller
         ]);
 
         // ✅ kalau dicentang buat agenda
-        if ($request->input('buat_agenda') == '1') {
+        if ($request->input('buat_agenda') === '1') {
             Agenda::create([
                 'judul' => $request->agenda_judul ?: ('Agenda: ' . $surat->subject),
                 'tanggal_mulai' => $request->agenda_mulai ?: ($surat->tanggal_terima . ' 09:00:00'),
-                'tanggal_selesai' => $request->agenda_selesai,
-                'lokasi' => $request->agenda_lokasi,
-                'keterangan' => $request->agenda_keterangan ?: ("Dibuat otomatis dari Surat Masuk: " . $surat->no_surat),
+                'tanggal_selesai' => $request->agenda_selesai ?: null,
+                'lokasi' => $request->agenda_lokasi ?: null,
+                'keterangan' => $request->agenda_keterangan ?: ('Dibuat otomatis dari Surat Masuk: ' . $surat->no_surat),
                 'status' => 'terjadwal',
                 'surat_masuk_id' => $surat->id,
                 'created_by' => 1, // hardcode dulu karena belum login
@@ -135,15 +135,30 @@ class SuratMasukController extends Controller
             ->with('success', 'Surat masuk berhasil dihapus!');
     }
 
-    // OPTIONAL: route untuk buka file surat (kalau kamu pakai route ini)
-    public function file($id)
+    /**
+     * ✅ INI YANG DIPANGGIL ROUTE surat-masuk.file (lihatFile)
+     */
+    public function lihatFile($id)
     {
         $item = SuratMasuk::findOrFail($id);
 
         if (!$item->file_surat) {
-            abort(404);
+            abort(404, 'File surat tidak ditemukan.');
+        }
+
+        if (!Storage::disk('public')->exists($item->file_surat)) {
+            abort(404, 'File tidak ada di storage.');
         }
 
         return response()->file(storage_path('app/public/' . $item->file_surat));
+    }
+
+    /**
+     * (optional) kalau masih ada route lama yang manggil ->file()
+     * biar aman, aku arahkan ke lihatFile juga.
+     */
+    public function file($id)
+    {
+        return $this->lihatFile($id);
     }
 }
