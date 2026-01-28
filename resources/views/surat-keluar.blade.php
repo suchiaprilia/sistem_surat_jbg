@@ -22,12 +22,12 @@
 <div class="row">
     <div class="col-xl-12">
         <div class="card">
-            <div class="card-header">
-                <h5>Data Surat Keluar</h5>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Data Surat Keluar</h5>
                 <button class="btn btn-primary" id="btnTambah">+ Tambah Surat</button>
             </div>
-            <div class="card-body">
 
+            <div class="card-body">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
                         {{ session('success') }}
@@ -36,43 +36,44 @@
                 @endif
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped">
+                    <table class="table table-hover table-striped align-middle">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th style="width:60px;">No</th>
                                 <th>No Surat</th>
                                 <th>Tujuan</th>
                                 <th>Subject</th>
                                 <th>Tanggal</th>
                                 <th>Requested By</th>
                                 <th>Signed By</th>
-                                <th>File</th>
-                                <th>Aksi</th>
+                                <th style="width:120px;">File</th>
+                                <th style="width:90px;">Aksi</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse ($suratKeluar as $item)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->no_surat_keluar }}</td>
+                                    <td><strong>{{ $item->no_surat_keluar }}</strong></td>
                                     <td>{{ $item->destination }}</td>
                                     <td>{{ $item->subject }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
                                     <td>{{ $item->requested_by ?? '-' }}</td>
                                     <td>{{ $item->signed_by ?? '-' }}</td>
 
-                                    {{-- Kolom File --}}
                                     <td>
                                         @if($item->file_scan)
-                                            <a class="btn btn-sm btn-outline-primary" target="_blank" href="{{ asset('storage/'.$item->file_scan) }}">
+                                            <a class="btn btn-sm btn-outline-primary"
+                                               target="_blank"
+                                               href="{{ asset('storage/'.$item->file_scan) }}">
                                                 Lihat
                                             </a>
                                         @else
-                                            -
+                                            <span class="text-muted">-</span>
                                         @endif
                                     </td>
 
-                                    {{-- Kolom Aksi: dropdown Edit + Hapus --}}
                                     <td class="text-nowrap">
                                         <div class="dropdown position-static">
                                             <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
@@ -81,7 +82,6 @@
                                             </button>
 
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                {{-- Edit --}}
                                                 <li>
                                                     <button
                                                         class="dropdown-item btn-edit"
@@ -93,6 +93,7 @@
                                                         data-date="{{ $item->date }}"
                                                         data-requested="{{ $item->requested_by }}"
                                                         data-signed="{{ $item->signed_by }}"
+                                                        data-jenis-id="{{ $item->id_jenis_surat }}"
                                                     >
                                                         Edit
                                                     </button>
@@ -100,7 +101,6 @@
 
                                                 <li><hr class="dropdown-divider"></li>
 
-                                                {{-- Hapus --}}
                                                 <li>
                                                     <form action="{{ route('surat-keluar.destroy', $item->id_surat_keluar) }}"
                                                           method="POST"
@@ -118,13 +118,13 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">Belum ada surat keluar.</td>
+                                    <td colspan="9" class="text-center text-muted py-3">Belum ada surat keluar.</td>
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
@@ -147,17 +147,9 @@
                     <input type="hidden" name="id_user" value="1">
 
                     <div class="mb-3">
-                        <label class="form-label">No Surat (Otomatis)</label>
-                        <input type="text" class="form-control" id="preview_no_surat" placeholder="Dibuat otomatis saat disimpan" readonly>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Kode Surat</label>
-                        <select name="kode_surat" id="kode_surat" class="form-control">
-                            <option value="AH">AH</option>
-                            <option value="UM">UM</option>
-                            <option value="SK">SK</option>
-                        </select>
+                        <label class="form-label">No Surat</label>
+                        <input type="text" class="form-control" name="no_surat_keluar" id="no_surat_keluar"
+                               placeholder="Contoh: 12/AH/JBG/I/2026" required>
                     </div>
 
                     <div class="mb-3">
@@ -183,6 +175,16 @@
                     <div class="mb-3">
                         <label class="form-label">Signed By</label>
                         <input type="text" class="form-control" name="signed_by" id="signed_by">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Surat</label>
+                        <select name="id_jenis_surat" id="id_jenis_surat" class="form-control">
+                            <option value="">-- Pilih Jenis Surat --</option>
+                            @foreach($jenisSurat as $jenis)
+                                <option value="{{ $jenis->id_jenis_surat }}">{{ $jenis->jenis_surat }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="mb-3">
@@ -212,9 +214,6 @@ document.getElementById('btnTambah').addEventListener('click', () => {
     document.getElementById('formMethod').value = 'POST';
     document.getElementById('suratForm').reset();
     document.getElementById('id_surat_keluar').value = '';
-
-    // preview nomor kosong karena dibuat saat simpan
-    document.getElementById('preview_no_surat').value = '';
 });
 
 document.querySelectorAll('.btn-edit').forEach(btn => {
@@ -228,14 +227,13 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
 
         document.getElementById('id_surat_keluar').value = btn.dataset.id;
 
-        // ✅ tampilkan nomor surat existing (readonly)
-        document.getElementById('preview_no_surat').value = btn.dataset.no || '';
-
-        document.getElementById('destination').value = btn.dataset.destination;
-        document.getElementById('subject').value = btn.dataset.subject;
-        document.getElementById('date').value = btn.dataset.date;
+        document.getElementById('no_surat_keluar').value = btn.dataset.no || '';
+        document.getElementById('destination').value = btn.dataset.destination || '';
+        document.getElementById('subject').value = btn.dataset.subject || '';
+        document.getElementById('date').value = btn.dataset.date || '';
         document.getElementById('requested_by').value = btn.dataset.requested || '';
         document.getElementById('signed_by').value = btn.dataset.signed || '';
+        document.getElementById('id_jenis_surat').value = btn.dataset.jenisId || '';
     });
 });
 

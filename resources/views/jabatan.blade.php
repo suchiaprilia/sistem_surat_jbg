@@ -43,7 +43,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Jabatan</th>
-                                <th>Aksi</th>
+                                <th class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,18 +51,43 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_jabatan }}</td>
-                                    <td>
-                                        <button
-                                            class="btn btn-sm btn-warning btn-edit"
-                                            data-id="{{ $item->id_jabatan }}"
-                                            data-nama="{{ $item->nama_jabatan }}">
-                                            Edit
-                                        </button>
-                                        <form action="{{ route('jabatan.destroy', $item->id_jabatan) }}" method="POST" style="display:inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus jabatan ini?')">Hapus</button>
-                                        </form>
+
+                                    {{-- ✅ AKSI TITIK TIGA --}}
+                                    <td class="text-nowrap">
+                                        <div class="dropdown position-static">
+                                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                ⋮
+                                            </button>
+
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {{-- Edit --}}
+                                                <li>
+                                                    <button
+                                                        class="dropdown-item btn-edit"
+                                                        type="button"
+                                                        data-id="{{ $item->id_jabatan }}"
+                                                        data-nama="{{ $item->nama_jabatan }}">
+                                                        Edit
+                                                    </button>
+                                                </li>
+
+                                                <li><hr class="dropdown-divider"></li>
+
+                                                {{-- Hapus --}}
+                                                <li>
+                                                    <form action="{{ route('jabatan.destroy', $item->id_jabatan) }}"
+                                                          method="POST"
+                                                          onsubmit="return confirm('Hapus jabatan ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            Hapus
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -119,7 +144,7 @@
         document.getElementById('id_jabatan').value = '';
     });
 
-    // Tombol Edit
+    // Tombol Edit (tetap jalan karena class btn-edit masih sama)
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
             const modal = new bootstrap.Modal(document.getElementById('jabatanModal'));
@@ -140,7 +165,7 @@
             setTimeout(() => {
                 const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
                 bsAlert.close();
-            }, 3000); // ✅ 3 detik
+            }, 3000);
         }
     });
 </script>

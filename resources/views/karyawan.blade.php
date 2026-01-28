@@ -46,7 +46,7 @@
                                 <th>Email</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
-                                <th>Aksi</th>
+                                <th class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,21 +57,46 @@
                                     <td>{{ $item->email_karyawan }}</td>
                                     <td>{{ $item->divisi->nama_divisi ?? '-' }}</td>
                                     <td>{{ $item->jabatan->nama_jabatan ?? '-' }}</td>
-                                    <td>
-                                        <button
-                                            class="btn btn-sm btn-warning btn-edit"
-                                            data-id="{{ $item->id_karyawan }}"
-                                            data-nama="{{ $item->nama_karyawan }}"
-                                            data-email="{{ $item->email_karyawan }}"
-                                            data-divisi="{{ $item->id_divisi }}"
-                                            data-jabatan="{{ $item->id_jabatan }}">
-                                            Edit
-                                        </button>
-                                        <form action="{{ route('karyawan.destroy', $item->id_karyawan) }}" method="POST" style="display:inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data?')">Hapus</button>
-                                        </form>
+
+                                    {{-- ✅ AKSI TITIK TIGA --}}
+                                    <td class="text-nowrap">
+                                        <div class="dropdown position-static">
+                                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                ⋮
+                                            </button>
+
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {{-- Edit --}}
+                                                <li>
+                                                    <button
+                                                        class="dropdown-item btn-edit"
+                                                        type="button"
+                                                        data-id="{{ $item->id_karyawan }}"
+                                                        data-nama="{{ $item->nama_karyawan }}"
+                                                        data-email="{{ $item->email_karyawan }}"
+                                                        data-divisi="{{ $item->id_divisi }}"
+                                                        data-jabatan="{{ $item->id_jabatan }}">
+                                                        Edit
+                                                    </button>
+                                                </li>
+
+                                                <li><hr class="dropdown-divider"></li>
+
+                                                {{-- Hapus --}}
+                                                <li>
+                                                    <form action="{{ route('karyawan.destroy', $item->id_karyawan) }}"
+                                                          method="POST"
+                                                          onsubmit="return confirm('Hapus data?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            Hapus
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

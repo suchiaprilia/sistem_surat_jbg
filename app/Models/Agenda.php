@@ -9,6 +9,8 @@ class Agenda extends Model
 {
     use HasFactory;
 
+    protected $table = 'agendas';
+
     protected $fillable = [
         'judul',
         'tanggal_mulai',
@@ -21,8 +23,8 @@ class Agenda extends Model
         'created_by',
     ];
 
-    protected $casts = [
-        'tanggal_mulai' => 'datetime',
-        'tanggal_selesai' => 'datetime',
-    ];
+    public function suratMasuk()
+    {
+        return $this->belongsTo(SuratMasuk::class, 'surat_masuk_id');
+    }
 }

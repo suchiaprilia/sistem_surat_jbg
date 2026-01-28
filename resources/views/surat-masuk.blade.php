@@ -68,14 +68,14 @@
                                     {{-- File --}}
                                     <td>
                                         @if ($item->file_surat)
-                                        <a href="{{ route('surat-masuk.file', $item->id) }}"
-                                        target="_blank"
-                                        class="btn btn-sm btn-outline-primary">
-                                            Lihat
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
+                                            <a href="{{ route('surat-masuk.file', $item->id) }}"
+                                               target="_blank"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Lihat
+                                            </a>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
 
                                     {{-- Aksi (Dropdown rapi seperti Surat Keluar) --}}
@@ -97,7 +97,7 @@
                                                         data-id="{{ $item->id }}"
                                                         data-no="{{ $item->no_surat }}"
                                                         data-tanggal="{{ $item->tanggal }}"
-                                                        data-tanggal_terima="{{ $item->tanggal_terima }}"
+                                                        data-tanggal-terima="{{ $item->tanggal_terima }}"
                                                         data-penerima="{{ $item->penerima }}"
                                                         data-pengirim="{{ $item->pengirim }}"
                                                         data-subject="{{ $item->subject }}"
@@ -215,6 +215,41 @@
                         <input type="file" name="file_surat" class="form-control">
                     </div>
 
+                    {{-- ✅ TAMBAHAN: BUAT AGENDA DARI SURAT (AUTO) --}}
+                    <hr>
+                    <div class="mb-2">
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" name="buat_agenda" value="1" id="buatAgenda">
+                            <span class="form-check-label">Buat agenda dari surat ini</span>
+                        </label>
+                    </div>
+
+                    <div id="agendaFields" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Mulai Agenda (opsional)</label>
+                                <input type="datetime-local" name="agenda_tanggal_mulai" class="form-control">
+                                <small class="text-muted">Kalau kosong, otomatis pakai tanggal terima jam 08:00</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Selesai (opsional)</label>
+                                <input type="datetime-local" name="agenda_tanggal_selesai" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Lokasi (opsional)</label>
+                            <input type="text" name="agenda_lokasi" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Keterangan (opsional)</label>
+                            <textarea name="agenda_keterangan" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    {{-- ✅ END TAMBAHAN AGENDA --}}
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -235,6 +270,14 @@ document.getElementById('btnTambah').addEventListener('click', () => {
     document.getElementById('formMethod').value = 'POST';
     document.getElementById('suratForm').reset();
     document.getElementById('id_surat_masuk').value = '';
+
+    // reset agenda UI
+    const cb = document.getElementById('buatAgenda');
+    const box = document.getElementById('agendaFields');
+    if (cb && box) {
+        cb.checked = false;
+        box.style.display = 'none';
+    }
 });
 
 // Tombol Edit (dropdown item juga tetap class btn-edit)
@@ -255,7 +298,26 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
         document.getElementById('subject').value = btn.dataset.subject;
         document.getElementById('tujuan').value = btn.dataset.tujuan;
         document.getElementById('id_jenis_surat').value = btn.dataset.jenisId;
+
+        // agenda UI disembunyikan saat edit (karena agenda dibuat saat create)
+        const cb = document.getElementById('buatAgenda');
+        const box = document.getElementById('agendaFields');
+        if (cb && box) {
+            cb.checked = false;
+            box.style.display = 'none';
+        }
     });
+});
+
+// Toggle agenda fields
+document.addEventListener('DOMContentLoaded', () => {
+    const cb = document.getElementById('buatAgenda');
+    const box = document.getElementById('agendaFields');
+    if (cb && box) {
+        cb.addEventListener('change', () => {
+            box.style.display = cb.checked ? 'block' : 'none';
+        });
+    }
 });
 
 // Auto-hide success alert
