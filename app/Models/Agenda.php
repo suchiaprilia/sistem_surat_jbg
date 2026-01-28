@@ -11,17 +11,17 @@ class Agenda extends Model
 
     protected $table = 'agendas';
 
-    protected $fillable = [
-        'judul',
-        'tanggal_mulai',
-        'tanggal_selesai',
-        'lokasi',
-        'keterangan',
-        'status',
-        'surat_masuk_id',
-        'surat_keluar_id',
-        'created_by',
-    ];
+ protected $fillable = [
+    'judul',
+    'tanggal_mulai',
+    'tanggal_selesai',
+    'lokasi',
+    'keterangan',
+    'status',
+    'surat_masuk_id',
+    'surat_keluar_id',
+    'created_by',
+];
 
     public function suratMasuk()
     {
