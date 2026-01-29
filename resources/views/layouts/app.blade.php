@@ -356,14 +356,6 @@
                     // isi dropdown
                     list.innerHTML = '';
 
-                    if (data.surat_masuk > 0) {
-                        list.innerHTML += `
-                            <a href="{{ route('surat-masuk.index') }}" class="dropdown-item">
-                                📥 ${data.surat_masuk} Surat Masuk Baru
-                            </a>
-                        `;
-                    }
-
                     if (data.disposisi > 0) {
                         list.innerHTML += `
                             <a href="{{ route('disposisi.index') }}" class="dropdown-item">

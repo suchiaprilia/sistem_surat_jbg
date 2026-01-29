@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
@@ -51,6 +52,11 @@ Route::get(
     '/surat-masuk/{id}/file',
     [SuratMasukController::class, 'lihatFile']
 )->name('surat-masuk.file');
+
+Route::post(
+    '/surat-masuk/{id}/read',
+    [SuratMasukController::class, 'markAsRead']
+)->name('surat-masuk.read');
 
 /*
 |--------------------------------------------------------------------------
@@ -116,21 +122,23 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/ajax/notifikasi', function () {
-    $karyawanId = 1; // DEV MODE
+    $karyawanId = 1; // nanti ganti auth()->id()
 
     $disposisiBaru = \App\Models\Disposisi::where('ke_karyawan_id', $karyawanId)
         ->where('status', 'baru')
         ->count();
 
-    $suratMasukBaru = \App\Models\SuratMasuk::whereDate('created_at', today())
-        ->count();
-
     return response()->json([
-        'total' => $disposisiBaru + $suratMasukBaru,
+        'total' => $disposisiBaru,
         'disposisi' => $disposisiBaru,
-        'surat_masuk' => $suratMasukBaru,
     ]);
 })->name('ajax.notifikasi');
+
+
+
+
+
+
 
 
 /*
