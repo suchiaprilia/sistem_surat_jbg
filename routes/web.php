@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratKeluarController;
@@ -16,25 +14,27 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\AuditLogController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| ROOT (/) - langsung ke dashboard JBG (tanpa login)
+|--------------------------------------------------------------------------
+*/
+Route::get('/', [DashboardController::class, 'index'])->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| DASHBOARD JBG (tanpa login)
+|--------------------------------------------------------------------------
+*/
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
-Route::post(
-    '/surat-masuk/{id}/read',
-    [SuratMasukController::class, 'markAsRead']
-)->name('surat-masuk.read');
+/*
+|--------------------------------------------------------------------------
+| Surat Masuk - tambahan mark as read
+|--------------------------------------------------------------------------
+*/
+Route::post('/surat-masuk/{id}/read', [SuratMasukController::class, 'markAsRead'])
+    ->name('surat-masuk.read');
 
 /*
 |--------------------------------------------------------------------------
@@ -46,12 +46,22 @@ Route::resource('surat-keluar', SuratKeluarController::class);
 Route::resource('divisi', DivisiController::class);
 Route::resource('jabatan', JabatanController::class);
 Route::resource('karyawan', KaryawanController::class);
+
 Route::resource('jenis-surat', JenisSuratController::class)->names([
     'index' => 'jenis-surat.index',
     'store' => 'jenis-surat.store',
     'update' => 'jenis-surat.update',
     'destroy' => 'jenis-surat.destroy',
 ]);
+
+/*
+|--------------------------------------------------------------------------
+| REKAP SURAT (biar menu rekap ga error)
+|--------------------------------------------------------------------------
+*/
+Route::get('/rekap-surat', [RekapSuratController::class, 'index'])->name('rekap-surat');
+Route::get('/rekap-surat/export/pdf', [RekapSuratController::class, 'exportPdf'])
+    ->name('rekap-surat.export.pdf');
 
 /*
 |--------------------------------------------------------------------------
@@ -84,11 +94,8 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
     Route::get('/create/{surat}', [DisposisiController::class, 'create'])->name('create');
     Route::post('/store', [DisposisiController::class, 'store'])->name('store');
 
-    Route::get('/{id}/teruskan', [DisposisiController::class, 'forward'])
-        ->name('teruskan');
-
-    Route::get('/surat/{surat}/riwayat', [DisposisiController::class, 'riwayat'])
-        ->name('riwayat');
+    Route::get('/{id}/teruskan', [DisposisiController::class, 'forward'])->name('teruskan');
+    Route::get('/surat/{surat}/riwayat', [DisposisiController::class, 'riwayat'])->name('riwayat');
 
     Route::post('/{id}/dibaca', [DisposisiController::class, 'markRead'])->name('dibaca');
     Route::post('/{id}/selesai', [DisposisiController::class, 'markDone'])->name('selesai');
@@ -96,11 +103,11 @@ Route::prefix('disposisi')->name('disposisi.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| NOTIFIKASI (AJAX POLLING)
+| NOTIFIKASI (AJAX POLLING) - sementara pakai 1
 |--------------------------------------------------------------------------
 */
 Route::get('/ajax/notifikasi', function () {
-    $karyawanId = 1; // nanti ganti auth()->id()
+    $karyawanId = 1; // kalau belum ada login, pake 1 dulu
 
     $disposisiBaru = \App\Models\Disposisi::where('ke_karyawan_id', $karyawanId)
         ->where('status', 'baru')
@@ -111,13 +118,6 @@ Route::get('/ajax/notifikasi', function () {
         'disposisi' => $disposisiBaru,
     ]);
 })->name('ajax.notifikasi');
-
-
-
-
-
-
-
 
 /*
 |--------------------------------------------------------------------------

@@ -87,6 +87,8 @@
                 </div>
             </div>
         </div>
+
+        {{-- ❌ BAGIAN "Total Surat Masuk / Total Surat Keluar" KECIL SUDAH DIHAPUS SESUAI REQUEST --}}
     </div>
 
     <!-- Statistik Tambahan -->
@@ -155,41 +157,40 @@
         </div>
     </div>
 
-    <!-- ✅ TABEL AGENDA HARI INI (DIPINDAH KE ATAS AKTIVITAS) -->
+    <!-- Tabel Surat Terbaru -->
     <div class="col-sm-12">
         <div class="card table-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5>Agenda Hari Ini</h5>
-                <a href="{{ url('/agenda?range=today') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+                <h5>Surat Masuk Terbaru</h5>
+                <a href="{{ route('surat-masuk.index') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
             </div>
-
             <div class="card-body p-0">
-                @if(isset($agenda_hari_ini) && $agenda_hari_ini->count())
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Jam</th>
-                                    <th>Judul</th>
-                                    <th>Lokasi</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($agenda_hari_ini as $a)
-                                    <tr>
-                                        <td>{{ \Carbon\Carbon::parse($a->tanggal_mulai)->format('H:i') }}</td>
-                                        <td><strong>{{ $a->judul }}</strong></td>
-                                        <td>{{ $a->lokasi ?? '-' }}</td>
-                                        <td><span class="badge bg-secondary">{{ $a->status }}</span></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="p-3 text-center text-muted">Tidak ada agenda hari ini</div>
-                @endif
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>No Surat</th>
+                                <th>Perihal</th>
+                                <th>Tanggal Terima</th>
+                                <th>Pengirim</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($surat_pending as $s)
+                            <tr>
+                                <td><strong>{{ $s->no_surat ?? '-' }}</strong></td>
+                                <td>{{ Str::limit($s->subject ?? '-', 30) }}</td>
+                                <td>{{ $s->tanggal_terima ? \Carbon\Carbon::parse($s->tanggal_terima)->format('d M Y') : '-' }}</td>
+                                <td>{{ $s->pengirim ?? '-' }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">Tidak ada surat masuk</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -241,6 +242,45 @@
                     </div>
                 @else
                     <div class="p-3 text-center text-muted">Belum ada aktivitas</div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ TABEL AGENDA HARI INI -->
+    <div class="col-sm-12">
+        <div class="card table-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Agenda Hari Ini</h5>
+                <a href="{{ url('/agenda?range=today') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+            </div>
+
+            <div class="card-body p-0">
+                @if(isset($agenda_hari_ini) && $agenda_hari_ini->count())
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Jam</th>
+                                    <th>Judul</th>
+                                    <th>Lokasi</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($agenda_hari_ini as $a)
+                                    <tr>
+                                        <td>{{ \Carbon\Carbon::parse($a->tanggal_mulai)->format('H:i') }}</td>
+                                        <td><strong>{{ $a->judul }}</strong></td>
+                                        <td>{{ $a->lokasi ?? '-' }}</td>
+                                        <td><span class="badge bg-secondary">{{ $a->status }}</span></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-3 text-center text-muted">Tidak ada agenda hari ini</div>
                 @endif
             </div>
         </div>

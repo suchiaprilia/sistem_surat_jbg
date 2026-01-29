@@ -1,38 +1,42 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<!doctype html>
+<html lang="en">
+<head>
+    <title>@yield('title') | JORONG BARUTAMA GRESTON</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <!-- [Meta] -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="Sistem Surat Desa Jorong Barutama Greston" />
+    <meta name="keywords" content="Laravel admin template, surat masuk, surat keluar, desa" />
+    <meta name="author" content="Jorong Barutama Greston" />
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- [Favicon] -->
+    <link rel="icon" href="{{ asset('gradient/assets/images/favicon.svg') }}" type="image/x-icon" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <!-- [Google Font : Poppins] -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+    <!-- [Icon Fonts] -->
+    <link rel="stylesheet" href="{{ asset('gradient/assets/fonts/tabler-icons.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('gradient/assets/fonts/feather.css') }}" />
+    <link rel="stylesheet" href="{{ asset('gradient/assets/fonts/fontawesome.css') }}" />
+    <link rel="stylesheet" href="{{ asset('gradient/assets/fonts/material.css') }}" />
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+    <!-- [Template CSS Files] -->
+    <link rel="stylesheet" href="{{ asset('gradient/assets/css/style.css') }}" id="main-style-link" />
+    <link rel="stylesheet" href="{{ asset('gradient/assets/css/style-preset.css') }}" />
+    <link rel="stylesheet" href="{{ asset('gradient/assets/js/plugins/jsvectormap.min.css') }}" />
+</head>
+
+<body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light"
+      data-pc-sidebar-caption="true" data-pc-direction="ltr" data-pc-theme="light">
+
+    <!-- [ Pre-loader ] start -->
+    <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
         </div>
-    </body>
     </div>
     <!-- [ Pre-loader ] End -->
 
@@ -194,7 +198,7 @@
                 </ul>
             </div>
 
-            {{-- ✅ Blok PHP notifikasi ditempatkan tepat sebelum section ms-auto --}}
+            {{-- ✅ Blok PHP tetap dipertahankan (tidak dihapus) --}}
             @php
                 use App\Http\Controllers\NotifikasiController;
                 $notifDisposisi = NotifikasiController::disposisiBaru();
@@ -202,7 +206,7 @@
 
             <div class="ms-auto">
                 <ul class="list-unstyled">
-                    {{-- ✅ ICON LONCENG - SATU SAJA --}}
+                    {{-- ✅ ICON LONCENG DENGAN BADGE (sudah benar di kode asli, tidak diubah) --}}
                     <li class="dropdown pc-h-item">
                         <a class="pc-head-link dropdown-toggle arrow-none me-3"
                            data-bs-toggle="dropdown" href="#">
@@ -227,7 +231,7 @@
                         </div>
                     </li>
 
-                    {{-- ✅ Elemen user profile tetap dipertahankan di posisi berikutnya --}}
+                    {{-- ✅ Elemen user profile tetap dipertahankan --}}
                     <li class="dropdown pc-h-item header-user-profile">
                         <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
                             <img src="{{ asset('gradient/assets/images/user/avatar-2.jpg') }}" alt="user-image" class="user-avtar" />
@@ -332,7 +336,7 @@
     {{-- ✅ Stack scripts tetap dipertahankan --}}
     @stack('scripts')
 
-    {{-- ✅ SATU POLLING UNTUK SEMUA NOTIFIKASI --}}
+    {{-- ✅ POLLING 5 DETIK (perubahan utama: 10000 → 5000) --}}
     <script>
         function loadNotifikasi() {
             fetch("{{ route('ajax.notifikasi') }}")
@@ -351,6 +355,14 @@
 
                     // isi dropdown
                     list.innerHTML = '';
+
+                    if (data.surat_masuk > 0) {
+                        list.innerHTML += `
+                            <a href="{{ route('surat-masuk.index') }}" class="dropdown-item">
+                                📥 ${data.surat_masuk} Surat Masuk Baru
+                            </a>
+                        `;
+                    }
 
                     if (data.disposisi > 0) {
                         list.innerHTML += `
@@ -371,7 +383,7 @@
         }
 
         loadNotifikasi();
-        setInterval(loadNotifikasi, 10000);
+        setInterval(loadNotifikasi, 5000); // ✅ DARI 10000 JADI 5000 (5 DETIK)
     </script>
 
 </body>
