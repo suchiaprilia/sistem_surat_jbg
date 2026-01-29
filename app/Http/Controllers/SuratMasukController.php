@@ -138,20 +138,51 @@ class SuratMasukController extends Controller
     /**
      * ✅ INI YANG DIPANGGIL ROUTE surat-masuk.file (lihatFile)
      */
-    public function lihatFile($id)
-    {
-        $item = SuratMasuk::findOrFail($id);
+    // ================================
+// 🔥 METHOD UNTUK BUKA FILE
+// ================================
+public function lihatFile($id)
+{
 
-        if (!$item->file_surat) {
-            abort(404, 'File surat tidak ditemukan.');
-        }
+    $surat = SuratMasuk::findOrFail($id);
 
-        if (!Storage::disk('public')->exists($item->file_surat)) {
-            abort(404, 'File tidak ada di storage.');
-        }
-
-        return response()->file(storage_path('app/public/' . $item->file_surat));
+    // Tandai surat sudah dibaca
+    if ($surat->is_read == 0) {
+        $surat->update([
+            'is_read' => 1
+        ]);
     }
+
+    if (
+        !$surat->file_surat ||
+        !Storage::disk('public')->exists($surat->file_surat)
+    ) {
+        abort(404, 'File tidak ditemukan');
+    }
+
+    return response()->file(
+        storage_path('app/public/' . $surat->file_surat),
+        [
+            'Content-Type' => Storage::disk('public')->mimeType($surat->file_surat)
+        ]
+    );
+}
+
+public function markAsRead($id)
+{
+    $surat = SuratMasuk::findOrFail($id);
+
+    if ($surat->is_read == 0) {
+        $surat->update([
+            'is_read' => 1
+        ]);
+    }
+
+    return redirect()
+        ->route('surat-masuk.index')
+        ->with('success', 'Surat ditandai sudah dibaca.');
+}
+
 
     /**
      * (optional) kalau masih ada route lama yang manggil ->file()
