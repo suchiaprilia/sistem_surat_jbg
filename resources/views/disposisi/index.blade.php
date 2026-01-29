@@ -12,6 +12,24 @@
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+
+        {{-- Script auto-dismiss setelah 10 detik --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    const alertElement = document.querySelector('.alert-success');
+                    if (alertElement) {
+                        // Hapus kelas 'show' untuk memicu efek fade out
+                        alertElement.classList.remove('show');
+
+                        // Hapus elemen setelah transisi selesai (150ms)
+                        setTimeout(function() {
+                            alertElement.remove();
+                        }, 150);
+                    }
+                }, 5000); // 10 detik
+            });
+        </script>
     @endif
 
     <div class="card">
