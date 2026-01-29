@@ -65,17 +65,18 @@
                                     <td>{{ $item->subject }}</td>
                                     <td>{{ $item->tujuan }}</td>
                                     <td>{{ $item->jenisSurat ? $item->jenisSurat->jenis_surat : '-' }}</td>
-
-                                    {{-- File --}}
-                                 <td>
-    @if(!empty($item->file_surat))
-        <a href="{{ asset('storage/' . $item->file_surat) }}" target="_blank" class="btn btn-sm btn-primary">
-            Lihat File
+<td class="text-center">
+    @if ($item->file_surat)
+        <a href="{{ asset('storage/' . $item->file_surat) }}"
+           target="_blank"
+           class="btn btn-sm btn-outline-primary">
+            Lihat
         </a>
     @else
         <span class="text-muted">-</span>
     @endif
 </td>
+
 
 
                                     {{-- Aksi dropdown --}}

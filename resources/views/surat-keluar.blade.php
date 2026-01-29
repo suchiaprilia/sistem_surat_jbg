@@ -226,14 +226,13 @@ document.querySelectorAll('.btn-edit').forEach(btn => {
         document.getElementById('formMethod').value = 'PUT';
 
         document.getElementById('id_surat_keluar').value = btn.dataset.id;
-
         document.getElementById('no_surat_keluar').value = btn.dataset.no || '';
         document.getElementById('destination').value = btn.dataset.destination || '';
         document.getElementById('subject').value = btn.dataset.subject || '';
         document.getElementById('date').value = btn.dataset.date || '';
         document.getElementById('requested_by').value = btn.dataset.requested || '';
         document.getElementById('signed_by').value = btn.dataset.signed || '';
-        document.getElementById('id_jenis_surat').value = btn.dataset.jenisId || '';
+        document.getElementById('id_jenis_surat').value = btn.getAttribute('data-jenis-id') || '';
     });
 });
 
