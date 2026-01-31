@@ -24,7 +24,9 @@
         <div class="card">
             <div class="card-header">
                 <h5>Manajemen Karyawan</h5>
+                 @if(session('role')=='admin')
                 <button class="btn btn-primary" id="btnTambah">+ Tambah Karyawan</button>
+                @endif
             </div>
             <div class="card-body">
 
@@ -117,8 +119,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                  @if(session('role')=='admin')
                 <h5 class="modal-title" id="karyawanModalLabel">Tambah Karyawan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+             @endif
             </div>
             <div class="modal-body">
                 <form id="karyawanForm" action="{{ route('karyawan.store') }}" method="POST">

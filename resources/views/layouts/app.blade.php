@@ -97,7 +97,7 @@
                             <span class="pc-mtext">Agenda</span>
                         </a>
                     </li>
-
+ @if(session('role')=='admin')
                     <li class="pc-item pc-caption">
                         <label>Master</label>
                         <i class="ph ph-folder"></i>
@@ -130,7 +130,7 @@
                             <span class="pc-mtext">Jenis Surat</span>
                         </a>
                     </li>
-
+@endif
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>

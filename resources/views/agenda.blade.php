@@ -27,10 +27,11 @@
                         <a class="btn btn-sm btn-outline-primary {{ !request('range') ? 'active' : '' }}"
                            href="{{ url('/agenda') }}">Semua</a>
                     </div>
-
+ @if(session('role')=='admin')
                     <button class="btn btn-primary btn-sm" id="btnTambahAgenda">
                         + Tambah Agenda
                     </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -160,8 +161,10 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                 @if(session('role')=='admin')
                 <h5 class="modal-title" id="agendaModalLabel">Tambah Agenda</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                @endif
             </div>
 
             <div class="modal-body">

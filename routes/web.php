@@ -13,13 +13,21 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
 | ROOT (/) - langsung ke dashboard JBG (tanpa login)
 |--------------------------------------------------------------------------
 */
-Route::get('/', [DashboardController::class, 'index'])->name('home');
+// Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('/', [AuthController::class, 'index'])->name('home');
+
+// proses login
+Route::post('/login', [AuthController::class, 'login'])->name('login.process');
+
+// logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
