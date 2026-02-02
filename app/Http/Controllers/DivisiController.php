@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Divisi;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class DivisiController extends Controller
@@ -10,6 +11,19 @@ class DivisiController extends Controller
     public function index()
     {
         $divisis = Divisi::all();
+
+        // ✅ AUDIT: view list divisi (opsional)
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = auth()->user()->name ?? 'System';
+            AuditLog::tulis(
+                'view',
+                'divisi',
+                null,
+                'Melihat daftar divisi',
+                $actor
+            );
+        }
+
         return view('divisi', compact('divisis'));
     }
 
@@ -24,16 +38,40 @@ class DivisiController extends Controller
             'nama_divisi' => 'required',
         ]);
 
-        Divisi::create($request->all());
+        $divisi = Divisi::create($request->all());
 
-      return redirect()->route('divisi.index')
-                ->with('success', 'Divisi berhasil ditambahkan!');
+        // ✅ AUDIT: create divisi
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = auth()->user()->name ?? 'System';
+            AuditLog::tulis(
+                'create',
+                'divisi',
+                $divisi->id ?? null,
+                'Menambahkan divisi: ' . ($divisi->nama_divisi ?? '-'),
+                $actor
+            );
+        }
 
+        return redirect()->route('divisi.index')
+            ->with('success', 'Divisi berhasil ditambahkan!');
     }
 
     public function edit($id)
     {
         $divisi = Divisi::findOrFail($id);
+
+        // ✅ AUDIT: view edit divisi (opsional)
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = auth()->user()->name ?? 'System';
+            AuditLog::tulis(
+                'view',
+                'divisi',
+                $divisi->id ?? null,
+                'Membuka form edit divisi: ' . ($divisi->nama_divisi ?? '-'),
+                $actor
+            );
+        }
+
         return view('divisi.edit', compact('divisi'));
     }
 
@@ -43,17 +81,44 @@ class DivisiController extends Controller
             'nama_divisi' => 'required',
         ]);
 
-        Divisi::findOrFail($id)->update($request->all());
+        $divisi = Divisi::findOrFail($id);
+        $divisi->update($request->all());
+
+        // ✅ AUDIT: update divisi
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = auth()->user()->name ?? 'System';
+            AuditLog::tulis(
+                'update',
+                'divisi',
+                $divisi->id ?? null,
+                'Memperbarui divisi: ' . ($divisi->nama_divisi ?? '-'),
+                $actor
+            );
+        }
 
         return redirect()->route('divisi.index')
-                         ->with('success', 'Divisi berhasil diperbarui!');
+            ->with('success', 'Divisi berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        Divisi::findOrFail($id)->delete();
+        $divisi = Divisi::findOrFail($id);
+
+        // ✅ AUDIT: delete divisi (log dulu sebelum hapus)
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = auth()->user()->name ?? 'System';
+            AuditLog::tulis(
+                'delete',
+                'divisi',
+                $divisi->id ?? null,
+                'Menghapus divisi: ' . ($divisi->nama_divisi ?? '-'),
+                $actor
+            );
+        }
+
+        $divisi->delete();
 
         return redirect()->route('divisi.index')
-                         ->with('success', 'Divisi berhasil dihapus!');
+            ->with('success', 'Divisi berhasil dihapus!');
     }
 }

@@ -235,7 +235,15 @@
                     {{-- ✅ Elemen user profile tetap dipertahankan --}}
                     <li class="dropdown pc-h-item header-user-profile">
                         <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                            <img src="{{ asset('gradient/assets/images/user/avatar-2.jpg') }}" alt="user-image" class="user-avtar" />
+                 <span class="user-avtar d-inline-flex align-items-center justify-content-center rounded-circle"
+      style="width:40px;height:40px; background:#fff; border:1px solid #e5e7eb;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+         fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21a8 8 0 0 0-16 0"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+</span>
+
                         </a>
                         <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
                             <div class="dropdown-body">

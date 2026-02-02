@@ -56,7 +56,11 @@
             </div>
             <div class="card-body">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <img src="{{ asset('gradient/assets/images/user/avatar-2.jpg') }}" class="rounded-circle" width="56" height="56" alt="avatar">
+                   <span class="user-avtar d-inline-flex align-items-center justify-content-center rounded-circle bg-light"
+      style="width:40px;height:40px;">
+    <i class="ph ph-user-circle" style="font-size:24px;"></i>
+</span>
+
                     <div>
                         <h5 class="mb-0">{{ $user->nama ?? '-' }}</h5>
                         <div class="text-muted">{{ $user->email ?? '-' }}</div>

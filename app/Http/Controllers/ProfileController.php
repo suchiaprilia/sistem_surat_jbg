@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Karyawan;
+use App\Models\AuditLog;
 
 class ProfileController extends Controller
 {
@@ -22,6 +23,18 @@ class ProfileController extends Controller
         $karyawan = Karyawan::with(['divisi', 'jabatan'])
             ->where('email_karyawan', $email)
             ->first();
+
+        // ✅ AUDIT: view profile
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = Auth::user()->name ?? 'System';
+            AuditLog::tulis(
+                'view_profile',
+                'profile',
+                Auth::id() ?? null,
+                'Melihat halaman profile',
+                $actor
+            );
+        }
 
         return view('profile', compact('user', 'karyawan'));
     }
@@ -43,12 +56,36 @@ class ProfileController extends Controller
         $user = User::where('email', $email)->first();
         if (!$user) return back()->with('error', 'User tidak ditemukan.');
 
+        // ❌ Password lama salah
         if ($user->password !== md5($request->password_lama)) {
+            if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+                $actor = Auth::user()->name ?? 'System';
+                AuditLog::tulis(
+                    'change_password_failed',
+                    'profile',
+                    Auth::id() ?? null,
+                    'Gagal mengubah password: password lama salah',
+                    $actor
+                );
+            }
+
             return back()->with('error', 'Password lama salah.');
         }
 
         $user->password = md5($request->password_baru);
         $user->save();
+
+        // ✅ Password berhasil diubah
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = Auth::user()->name ?? 'System';
+            AuditLog::tulis(
+                'change_password_success',
+                'profile',
+                Auth::id() ?? null,
+                'Berhasil mengubah password',
+                $actor
+            );
+        }
 
         return back()->with('success', 'Password berhasil diubah.');
     }
