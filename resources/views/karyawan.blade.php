@@ -97,6 +97,22 @@
                                                         </button>
                                                     </form>
                                                 </li>
+                                                {{-- Reset Password --}}
+@if(session('role')=='admin')
+<li>
+    <form action="{{ route('karyawan.resetPassword', $item->id_karyawan) }}"
+          method="POST"
+          onsubmit="return confirm('Reset password akun login jadi 123456?')">
+        @csrf
+        <button type="submit" class="dropdown-item">
+            Reset Password
+        </button>
+    </form>
+</li>
+
+<li><hr class="dropdown-divider"></li>
+@endif
+
                                             </ul>
                                         </div>
                                     </td>

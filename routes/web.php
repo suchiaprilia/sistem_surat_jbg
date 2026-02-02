@@ -14,6 +14,8 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +30,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 
 // logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +56,12 @@ Route::resource('surat-masuk', SuratMasukController::class);
 Route::resource('surat-keluar', SuratKeluarController::class);
 Route::resource('divisi', DivisiController::class);
 Route::resource('jabatan', JabatanController::class);
+
+//karyawan
 Route::resource('karyawan', KaryawanController::class);
+Route::post('/karyawan/{id}/reset-password', [KaryawanController::class, 'resetPassword'])
+    ->name('karyawan.resetPassword');
+
 
 Route::resource('jenis-surat', JenisSuratController::class)->names([
     'index' => 'jenis-surat.index',
@@ -134,3 +142,8 @@ Route::get('/ajax/notifikasi', function () {
 */
 Route::get('/audit-log', [AuditLogController::class, 'index'])
     ->name('audit-log.index');
+
+
+//profil
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

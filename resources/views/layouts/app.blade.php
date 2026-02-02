@@ -130,7 +130,7 @@
                             <span class="pc-mtext">Jenis Surat</span>
                         </a>
                     </li>
-@endif
+
                     <li class="pc-item pc-caption">
                         <label>Pages</label>
                         <i class="ph ph-devices"></i>
@@ -153,6 +153,7 @@
                 </ul>
             </div>
         </div>
+        @endif
     </nav>
     <!-- [ Sidebar Menu ] end -->
 
@@ -241,21 +242,28 @@
                                 <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 225px)">
                                     <ul class="list-group list-group-flush w-100">
                                         <li class="list-group-item">
-                                            <a href="#" class="dropdown-item">
+                                            <a href="{{ route('profile.index') }}" class="dropdown-item">
                                                 <span class="d-flex align-items-center">
                                                     <i class="ph ph-user-circle"></i>
                                                     <span>Profile</span>
                                                 </span>
                                             </a>
                                         </li>
-                                        <li class="list-group-item">
-                                            <a href="#" class="dropdown-item">
-                                                <span class="d-flex align-items-center">
-                                                    <i class="ph ph-power"></i>
-                                                    <span>Logout</span>
-                                                </span>
-                                            </a>
-                                        </li>
+                                       <li class="list-group-item">
+    <a href="#"
+       class="dropdown-item"
+       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <span class="d-flex align-items-center">
+            <i class="ph ph-power"></i>
+            <span>Logout</span>
+        </span>
+    </a>
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+        @csrf
+    </form>
+</li>
+
                                     </ul>
                                 </div>
                             </div>

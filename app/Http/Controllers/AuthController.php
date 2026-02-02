@@ -40,19 +40,25 @@ class AuthController extends Controller
 
         Auth::login($user); // pakai session auth Laravel
 session([
-        'role' => $user->role ?? 'user',
-        'user_name' => $user->name ?? '-',
+          'role' => $user->role,
+    'email' => $user->email,
+    'nama' => $user->nama,
     ]);
         // arahkan setelah login (ubah sesuai kebutuhan)
         return redirect()->route('dashboard');
     }
 
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+   public function logout(Request $request)
+{
+    Auth::logout(); // keluar dari login
 
-        return redirect()->route('home');
-    }
+    // hapus session role (kalau kamu pakai)
+    $request->session()->forget(['role', 'user_name']);
+
+    // reset session
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('home')->with('success', 'Berhasil logout.');
+}
 }

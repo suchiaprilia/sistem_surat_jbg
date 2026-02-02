@@ -24,9 +24,10 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Data Surat Keluar</h5>
+                @if(session('role')=='admin')
                 <button class="btn btn-primary" id="btnTambah">+ Tambah Surat</button>
+                @endif
             </div>
-
             <div class="card-body">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert" id="successAlert">
@@ -135,7 +136,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                @if(session('role')=='admin')
                 <h5 class="modal-title" id="suratModalLabel">Tambah Surat Keluar</h5>
+                @endif
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 

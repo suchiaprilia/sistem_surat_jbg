@@ -24,7 +24,9 @@
         <div class="card">
             <div class="card-header">
                 <h5>Daftar Surat Masuk</h5>
+                @if(session('role')=='admin')
                 <button class="btn btn-primary" id="btnTambah">+ Tambah Surat</button>
+                @endif
             </div>
 
             <div class="card-body">
