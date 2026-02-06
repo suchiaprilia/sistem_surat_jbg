@@ -48,17 +48,13 @@ session([
         return redirect()->route('dashboard');
     }
 
-   public function logout(Request $request)
+  public function logout(Request $request)
 {
-    Auth::logout(); // keluar dari login
+    Auth::logout();
 
-    // hapus session role (kalau kamu pakai)
-    $request->session()->forget(['role', 'user_name']);
-
-    // reset session
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect()->route('home')->with('success', 'Berhasil logout.');
+    return redirect()->route('login')->with('success', 'Berhasil logout.');
 }
 }

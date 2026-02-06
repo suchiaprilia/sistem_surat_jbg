@@ -6,8 +6,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    protected $table = 'user';          // tabel kamu
-    protected $primaryKey = 'id_user';  // primary key kamu
+    protected $table = 'user';
+    protected $primaryKey = 'id_user';   // 🔑 WAJIB
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nama',
@@ -17,9 +19,13 @@ class User extends Authenticatable
         'password',
     ];
 
-    protected $hidden = [
-        'password',
-    ];
+    protected $hidden = ['password'];
 
     public $timestamps = true;
+
+    // 🔗 RELASI KE KARYAWAN
+    public function karyawan()
+    {
+        return $this->hasOne(Karyawan::class, 'user_id', 'id_user');
+    }
 }

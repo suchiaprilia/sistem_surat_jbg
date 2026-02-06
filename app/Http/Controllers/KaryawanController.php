@@ -29,7 +29,7 @@ public function store(Request $request)
 
     $request->validate([
         'nama_karyawan' => 'required|regex:/^[A-Za-z\s]+$/',
-        'email_karyawan' => 'required|email|unique:karyawans,email_karyawan',
+        'email_karyawan' => 'required|email|unique:users,email',
         'id_divisi' => 'required',
         'id_jabatan' => 'required',
     ], [
@@ -38,28 +38,34 @@ public function store(Request $request)
 
     DB::transaction(function () use ($request) {
 
-        // 1) simpan ke tabel karyawans
-        Karyawan::create([
-            'nama_karyawan' => $request->nama_karyawan,
-            'email_karyawan' => $request->email_karyawan,
-            'id_divisi' => $request->id_divisi,
-            'id_jabatan' => $request->id_jabatan,
-        ]);
+    // 1️⃣ buat / ambil akun user
+    $user = User::firstOrCreate(
+        ['email' => $request->email_karyawan],
+        [
+            'nama' => $request->nama_karyawan,
+            'jabatan' => 'karyawan',
+            'role' => 'user',
+            'password' => md5('123456'),
+        ]
+    );
 
-        // 2) buat akun login di tabel user
-        // cek dulu, kalau email sudah ada di tabel user, jangan bikin dobel
-        $sudahAda = User::where('email', $request->email_karyawan)->exists();
+    // 🔎 DEBUG AMAN (opsional)
+    if (!$user->id_user) {
+        throw new \Exception('User ID tidak terbentuk');
+    }
 
-        if (!$sudahAda) {
-            User::create([
-                'nama' => $request->nama_karyawan,
-                'jabatan' => 'karyawan',
-                'role' => 'karyawan',
-                'email' => $request->email_karyawan,
-                'password' => md5('123456'), // password default
-            ]);
-        }
-    });
+    // 2️⃣ simpan karyawan + relasi ke user
+    Karyawan::create([
+        'user_id' => $user->id_user,   // 🔑 INI KUNCI
+        'nama_karyawan' => $request->nama_karyawan,
+        'email_karyawan' => $request->email_karyawan,
+        'id_divisi' => $request->id_divisi,
+        'id_jabatan' => $request->id_jabatan,
+        'role' => 'user',
+    ]);
+});
+
+
 
     return redirect()->route('karyawan.index')
         ->with('success', 'Karyawan berhasil ditambahkan! Akun login dibuat (password default: 123456).');
