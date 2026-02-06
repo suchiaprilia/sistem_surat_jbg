@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
 use App\Models\SuratKeluar;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RekapSuratExport;
@@ -15,6 +17,19 @@ class RekapSuratController extends Controller
     {
         $start = $request->start_date;
         $end   = $request->end_date;
+
+        // ✅ AUDIT: lihat rekap (opsional)
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = Auth::user()->name ?? 'System';
+            $range = ($start && $end) ? "Range: {$start} s/d {$end}" : "Tanpa filter tanggal";
+            AuditLog::tulis(
+                'view',
+                'rekap_surat',
+                null,
+                "Melihat halaman rekap surat. {$range}",
+                $actor
+            );
+        }
 
         // Surat Masuk
         $suratMasuk = SuratMasuk::with('jenisSurat')
@@ -65,6 +80,19 @@ class RekapSuratController extends Controller
         $start = $request->start_date;
         $end   = $request->end_date;
 
+        // ✅ AUDIT: export pdf
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = Auth::user()->name ?? 'System';
+            $range = ($start && $end) ? "Range: {$start} s/d {$end}" : "Tanpa filter tanggal";
+            AuditLog::tulis(
+                'export_pdf',
+                'rekap_surat',
+                null,
+                "Export rekap surat ke PDF. {$range}",
+                $actor
+            );
+        }
+
         $suratMasuk = SuratMasuk::with('jenisSurat')
             ->when($start && $end, fn ($q) =>
                 $q->whereBetween('tanggal_terima', [$start, $end])
@@ -88,6 +116,22 @@ class RekapSuratController extends Controller
     // =======================
     public function exportExcel(Request $request)
     {
+        // ✅ AUDIT: export excel
+        $start = $request->start_date;
+        $end   = $request->end_date;
+
+        if (class_exists(AuditLog::class) && method_exists(AuditLog::class, 'tulis')) {
+            $actor = Auth::user()->name ?? 'System';
+            $range = ($start && $end) ? "Range: {$start} s/d {$end}" : "Tanpa filter tanggal";
+            AuditLog::tulis(
+                'export_excel',
+                'rekap_surat',
+                null,
+                "Export rekap surat ke Excel. {$range}",
+                $actor
+            );
+        }
+
         return Excel::download(
             new RekapSuratExport($request),
             'rekap-surat.xlsx'
