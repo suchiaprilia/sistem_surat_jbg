@@ -67,26 +67,14 @@ class AuthController extends Controller
         return redirect()->route('dashboard');
     }
 
-    // logout
-    public function logout(Request $request)
-    {
-        // catat audit logout dulu (sebelum Auth::logout)
-        AuditLog::tulis(
-            'logout',
-            'auth',
-            Auth::user()->id_user ?? null,
-            'Logout'
-        );
+  public function logout(Request $request)
+{
+    Auth::logout();
 
-        Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-        // hapus session tambahan yang kamu pakai
-        $request->session()->forget(['role', 'email', 'nama']);
+    return redirect()->route('login')->with('success', 'Berhasil logout.');
+}
 
-        // reset session
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('home')->with('success', 'Berhasil logout.');
-    }
 }

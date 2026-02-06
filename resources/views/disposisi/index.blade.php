@@ -3,120 +3,114 @@
 @section('title', 'Disposisi Saya')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
     <h4 class="mb-4">📥 Disposisi Saya</h4>
 
-    {{-- Alert sukses --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-
-        {{-- Script auto-dismiss setelah 10 detik --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(function() {
-                    const alertElement = document.querySelector('.alert-success');
-                    if (alertElement) {
-                        // Hapus kelas 'show' untuk memicu efek fade out
-                        alertElement.classList.remove('show');
-
-                        // Hapus elemen setelah transisi selesai (150ms)
-                        setTimeout(function() {
-                            alertElement.remove();
-                        }, 150);
-                    }
-                }, 5000); // 10 detik
-            });
-        </script>
     @endif
 
     <div class="card">
         <div class="card-body">
+
             <table class="table table-bordered table-striped align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>No</th>
                         <th>No Surat</th>
-                        <th>Perihal</th>
+                        <th>Pengirim</th>
                         <th>Instruksi</th>
                         <th>Batas Waktu</th>
                         <th>Status</th>
-                        <th>Aksi</th>
+                        <th style="width:180px">Aksi</th>
                         <th>Diterima</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($disposisis as $disposisi)
+                    @forelse ($disposisis as $disposisi)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $disposisi->suratMasuk->no_surat ?? '-' }}</td>
-                            <td>{{ $disposisi->suratMasuk->subject ?? '-' }}</td>
-                            <td>{{ $disposisi->instruksi }}</td>
-                            <td>{{ $disposisi->batas_waktu ?? '-' }}</td>
+
+                            <td>
+                                {{ $disposisi->suratMasuk->no_surat ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $disposisi->dari->nama_karyawan ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $disposisi->instruksi }}
+                            </td>
+
+                            <td>
+                                {{ $disposisi->batas_waktu
+                                    ? \Carbon\Carbon::parse($disposisi->batas_waktu)->format('d-m-Y')
+                                    : '-' }}
+                            </td>
 
                             {{-- STATUS --}}
                             <td>
-                                @if ($disposisi->status == 'baru')
+                                @if ($disposisi->status === 'baru')
                                     <span class="badge bg-secondary">BARU</span>
-                                @elseif ($disposisi->status == 'dibaca')
+                                @elseif ($disposisi->status === 'dibaca')
                                     <span class="badge bg-warning">DIBACA</span>
-                                @elseif ($disposisi->status == 'selesai')
+                                @elseif ($disposisi->status === 'selesai')
                                     <span class="badge bg-success">SELESAI</span>
                                 @endif
                             </td>
 
                             {{-- AKSI --}}
-                            <td>
-                                {{-- Dibaca --}}
-                                @if ($disposisi->status == 'baru')
+                            <td class="text-nowrap">
+
+                                {{-- TANDAI DIBACA --}}
+                                @if ($disposisi->status === 'baru')
                                     <form action="{{ route('disposisi.dibaca', $disposisi->id) }}"
-                                          method="POST" style="display:inline">
+                                          method="POST" class="d-inline">
                                         @csrf
-                                        <button class="btn btn-sm btn-info mb-1">
+                                        <button class="btn btn-sm btn-info">
                                             Dibaca
                                         </button>
                                     </form>
                                 @endif
 
-                                {{-- Selesai --}}
-                                @if ($disposisi->status != 'selesai')
+                                {{-- SELESAI --}}
+                                @if ($disposisi->status !== 'selesai')
                                     <form action="{{ route('disposisi.selesai', $disposisi->id) }}"
-                                          method="POST" style="display:inline">
+                                          method="POST" class="d-inline">
                                         @csrf
-                                        <button class="btn btn-sm btn-success mb-1">
+                                        <button class="btn btn-sm btn-success">
                                             Selesai
                                         </button>
                                     </form>
                                 @endif
 
-                                {{-- Teruskan --}}
-                                @if ($disposisi->status != 'selesai')
+                                {{-- TERUSKAN --}}
+                                @if ($disposisi->status !== 'selesai')
                                     <a href="{{ route('disposisi.teruskan', $disposisi->id) }}"
-                                       class="btn btn-sm btn-warning mb-1">
+                                       class="btn btn-sm btn-warning">
                                         Teruskan
                                     </a>
                                 @endif
-
-                                {{-- Riwayat --}}
-                                <a href="{{ route('disposisi.riwayat', $disposisi->surat_masuk_id) }}"
-                                   class="btn btn-sm btn-dark mb-1">
-                                    Riwayat
-                                </a>
                             </td>
 
-                            <td>{{ $disposisi->created_at->format('d-m-Y') }}</td>
+                            <td>
+                                {{ $disposisi->created_at->format('d-m-Y') }}
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">
+                            <td colspan="8" class="text-center text-muted">
                                 Belum ada disposisi
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>

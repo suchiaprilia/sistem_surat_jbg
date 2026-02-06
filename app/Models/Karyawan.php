@@ -2,29 +2,57 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Karyawan extends Model
 {
-    use HasFactory;
-
+    protected $table = 'karyawans';
     protected $primaryKey = 'id_karyawan';
 
     protected $fillable = [
+        'user_id',
         'nama_karyawan',
         'email_karyawan',
+        'role',
         'id_divisi',
-        'id_jabatan'
+        'id_jabatan',
     ];
 
-    public function divisi()
+    public $timestamps = true;
+
+    // 🔗 RELASI KE USER
+    public function user()
     {
-        return $this->belongsTo(Divisi::class, 'id_divisi');
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
 
+    // 🔗 RELASI KE DIVISI (INI YANG ERROR TADI)
+    public function divisi()
+    {
+        return $this->belongsTo(Divisi::class, 'id_divisi', 'id_divisi');
+    }
+
+    // 🔗 RELASI KE JABATAN
     public function jabatan()
     {
-        return $this->belongsTo(Jabatan::class, 'id_jabatan');
+        return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
+    }
+
+    // =====================
+    // HELPER ROLE
+    // =====================
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isPimpinan()
+    {
+        return in_array($this->role, ['admin', 'pimpinan']);
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
     }
 }
