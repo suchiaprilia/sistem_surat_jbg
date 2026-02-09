@@ -28,48 +28,55 @@ public function store(Request $request)
     }
 
     $request->validate([
-        'nama_karyawan' => 'required|regex:/^[A-Za-z\s]+$/',
-        'email_karyawan' => 'required|email|unique:users,email',
-        'id_divisi' => 'required',
-        'id_jabatan' => 'required',
+        'nama_karyawan'  => 'required|regex:/^[A-Za-z\s]+$/',
+        'email_karyawan' => 'required|email|unique:user,email', // ✅ tabel kamu "user"
+        'id_divisi'      => 'required',
+        'id_jabatan'     => 'required',
+        'role'           => 'required|in:admin,pimpinan,staff', // ✅ tambah role
     ], [
         'nama_karyawan.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
     ]);
 
     DB::transaction(function () use ($request) {
 
-    // 1️⃣ buat / ambil akun user
-    $user = User::firstOrCreate(
-        ['email' => $request->email_karyawan],
-        [
-            'nama' => $request->nama_karyawan,
-            'jabatan' => 'karyawan',
-            'role' => 'user',
-            'password' => md5('123456'),
-        ]
-    );
+        // ambil nama jabatan dari tabel jabatans
+        $jabatan = Jabatan::where('id_jabatan', $request->id_jabatan)->firstOrFail();
 
-    // 🔎 DEBUG AMAN (opsional)
-    if (!$user->id_user) {
-        throw new \Exception('User ID tidak terbentuk');
-    }
+        // 1️⃣ buat / ambil akun user
+        $user = User::firstOrCreate(
+            ['email' => $request->email_karyawan],
+            [
+                'nama'     => $request->nama_karyawan,
+                'jabatan'  => $jabatan->nama_jabatan, // ✅ isi sesuai pilihan jabatan
+                'role'     => $request->role,         // ✅ role dari form
+                'password' => md5('123456'),
+            ]
+        );
 
-    // 2️⃣ simpan karyawan + relasi ke user
-    Karyawan::create([
-        'user_id' => $user->id_user,   // 🔑 INI KUNCI
-        'nama_karyawan' => $request->nama_karyawan,
-        'email_karyawan' => $request->email_karyawan,
-        'id_divisi' => $request->id_divisi,
-        'id_jabatan' => $request->id_jabatan,
-        'role' => 'user',
-    ]);
-});
+        // kalau user sudah ada (firstOrCreate menemukan existing), update role+jabatan biar sinkron
+        $user->update([
+            'nama'    => $request->nama_karyawan,
+            'jabatan' => $jabatan->nama_jabatan,
+            'role'    => $request->role,
+        ]);
 
+        // 2️⃣ simpan karyawan + relasi ke user
+        Karyawan::create([
+            'user_id'        => $user->id_user,
+            'nama_karyawan'  => $request->nama_karyawan,
+            'email_karyawan' => $request->email_karyawan,
+            'id_divisi'      => $request->id_divisi,
+            'id_jabatan'     => $request->id_jabatan,
 
+            // ✅ tetap isi juga untuk kompatibilitas kode lama
+            'role'           => $request->role,
+        ]);
+    });
 
     return redirect()->route('karyawan.index')
         ->with('success', 'Karyawan berhasil ditambahkan! Akun login dibuat (password default: 123456).');
 }
+
 
 
     public function edit($id)
@@ -91,10 +98,11 @@ public function store(Request $request)
     }
 
     $request->validate([
-        'nama_karyawan' => 'required|regex:/^[A-Za-z\s]+$/',
+        'nama_karyawan'  => 'required|regex:/^[A-Za-z\s]+$/',
         'email_karyawan' => 'required|email|unique:karyawans,email_karyawan,' . $id . ',id_karyawan',
-        'id_divisi' => 'required',
-        'id_jabatan' => 'required',
+        'id_divisi'      => 'required',
+        'id_jabatan'     => 'required',
+        'role'           => 'required|in:admin,pimpinan,staff', // ✅ TAMBAH
     ], [
         'nama_karyawan.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
     ]);
@@ -106,24 +114,31 @@ public function store(Request $request)
 
     DB::transaction(function () use ($request, $karyawan, $emailLama) {
 
+        // ✅ ambil nama jabatan dari tabel jabatans
+        $jabatan = Jabatan::where('id_jabatan', $request->id_jabatan)->first();
+
         // 1) update data karyawan
         $karyawan->update([
-            'nama_karyawan' => $request->nama_karyawan,
+            'nama_karyawan'  => $request->nama_karyawan,
             'email_karyawan' => $request->email_karyawan,
-            'id_divisi' => $request->id_divisi,
-            'id_jabatan' => $request->id_jabatan,
+            'id_divisi'      => $request->id_divisi,
+            'id_jabatan'     => $request->id_jabatan,
+            'role'           => $request->role, // ✅ TAMBAH (biar kompatibel kode lama)
         ]);
 
         // 2) update akun login di tabel user (berdasarkan email lama)
         User::where('email', $emailLama)->update([
-            'nama' => $request->nama_karyawan,
-            'email' => $request->email_karyawan,
+            'nama'    => $request->nama_karyawan,
+            'email'   => $request->email_karyawan,
+            'role'    => $request->role, // ✅ TAMBAH (hak akses)
+            'jabatan' => $jabatan ? $jabatan->nama_jabatan : null, // ✅ sinkron jabatan
         ]);
     });
 
     return redirect()->route('karyawan.index')
         ->with('success', 'Karyawan + akun login berhasil diperbarui!');
 }
+
 
 
     public function destroy($id)

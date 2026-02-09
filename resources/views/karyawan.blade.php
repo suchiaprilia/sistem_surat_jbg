@@ -43,12 +43,13 @@
                     <table class="table table-hover table-striped">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>Divisi</th>
-                                <th>Jabatan</th>
-                                <th class="text-nowrap">Aksi</th>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Divisi</th>
+                            <th>Jabatan</th>
+                            <th>Role</th>
+                            <th class="text-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,7 +60,8 @@
                                     <td>{{ $item->email_karyawan }}</td>
                                     <td>{{ $item->divisi->nama_divisi ?? '-' }}</td>
                                     <td>{{ $item->jabatan->nama_jabatan ?? '-' }}</td>
-
+                                    <td>{{ $item->role_fix }}</td>
+                                    
                                     {{-- ✅ AKSI TITIK TIGA --}}
                                     <td class="text-nowrap">
                                         <div class="dropdown position-static">
@@ -72,15 +74,17 @@
                                                 {{-- Edit --}}
                                                 <li>
                                                     <button
-                                                        class="dropdown-item btn-edit"
-                                                        type="button"
-                                                        data-id="{{ $item->id_karyawan }}"
-                                                        data-nama="{{ $item->nama_karyawan }}"
-                                                        data-email="{{ $item->email_karyawan }}"
-                                                        data-divisi="{{ $item->id_divisi }}"
-                                                        data-jabatan="{{ $item->id_jabatan }}">
-                                                        Edit
-                                                    </button>
+                                                    class="dropdown-item btn-edit"
+                                                    type="button"
+                                                    data-id="{{ $item->id_karyawan }}"
+                                                    data-nama="{{ $item->nama_karyawan }}"
+                                                    data-email="{{ $item->email_karyawan }}"
+                                                    data-divisi="{{ $item->id_divisi }}"
+                                                    data-jabatan="{{ $item->id_jabatan }}"
+                                                    data-role="{{ $item->role }}"
+                                                >
+                                                    Edit
+                                                </button>
                                                 </li>
 
                                                 <li><hr class="dropdown-divider"></li>
@@ -169,6 +173,17 @@
                                 @endforeach
                             </select>
                         </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-control" name="role" id="role" required>
+                            <option value="">— Pilih Role —</option>
+                            <option value="admin">Admin</option>
+                            <option value="pimpinan">Pimpinan</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="id_jabatan" class="form-label">Jabatan</label>
                             <select class="form-control" name="id_jabatan" id="id_jabatan" required>
@@ -210,19 +225,21 @@
 
     // Tombol Edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const modal = new bootstrap.Modal(document.getElementById('karyawanModal'));
-            modal.show();
-            document.getElementById('karyawanModalLabel').textContent = 'Edit Karyawan';
-            document.getElementById('karyawanForm').action = "/karyawan/" + btn.dataset.id;
-            document.getElementById('formMethod').value = 'PUT';
+    btn.addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('karyawanModal'));
+        modal.show();
+        document.getElementById('karyawanModalLabel').textContent = 'Edit Karyawan';
+        document.getElementById('karyawanForm').action = "/karyawan/" + btn.dataset.id;
+        document.getElementById('formMethod').value = 'PUT';
 
-            document.getElementById('id_karyawan').value = btn.dataset.id;
-            document.getElementById('nama_karyawan').value = btn.dataset.nama;
-            document.getElementById('email_karyawan').value = btn.dataset.email;
-            document.getElementById('id_divisi').value = btn.dataset.divisi;
-            document.getElementById('id_jabatan').value = btn.dataset.jabatan;
-            clearErrors();
+        document.getElementById('id_karyawan').value = btn.dataset.id;
+        document.getElementById('nama_karyawan').value = btn.dataset.nama;
+        document.getElementById('email_karyawan').value = btn.dataset.email;
+        document.getElementById('id_divisi').value = btn.dataset.divisi;
+        document.getElementById('id_jabatan').value = btn.dataset.jabatan;
+        document.getElementById('role').value = btn.dataset.role;
+
+        clearErrors();
         });
     });
 

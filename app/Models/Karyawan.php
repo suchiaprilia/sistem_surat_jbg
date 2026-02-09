@@ -38,21 +38,33 @@ class Karyawan extends Model
         return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
     }
 
+    public function getRoleFixAttribute()
+    {
+        // prioritas user.role, fallback ke kolom karyawans.role (untuk kompatibilitas)
+        return $this->user->role ?? $this->role;
+    }
+
+    public function getJabatanFixAttribute()
+    {
+        // prioritas relasi jabatan, fallback ke user.jabatan (string)
+        return $this->jabatan->nama_jabatan ?? ($this->user->jabatan ?? null);
+    }
+
     // =====================
     // HELPER ROLE
     // =====================
-    public function isAdmin()
+   public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role_fix === 'admin';
     }
 
     public function isPimpinan()
     {
-        return in_array($this->role, ['admin', 'pimpinan']);
+        return in_array($this->role_fix, ['admin', 'pimpinan']);
     }
 
-    public function isUser()
+    public function isStaff()
     {
-        return $this->role === 'user';
+        return $this->role_fix === 'staff';
     }
-}
+ }
