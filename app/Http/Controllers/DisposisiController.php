@@ -14,6 +14,26 @@ class DisposisiController extends Controller
      * INBOX DISPOSISI
      * ==================================================
      */
+
+    private function allowedRecipientRoles(string $senderRole): array
+    {
+        return match ($senderRole) {
+            'admin'    => ['admin', 'pimpinan', 'staff'],
+            'pimpinan' => ['pimpinan', 'staff'],
+            'staff'    => ['staff'],
+            default    => [],
+        };
+    }
+
+    private function recipientsFor(Karyawan $karyawanLogin)
+    {
+        $allowed = $this->allowedRecipientRoles($karyawanLogin->role_fix);
+
+        return Karyawan::whereIn('role', $allowed)
+            ->where('id_karyawan', '!=', $karyawanLogin->id_karyawan)
+            ->get();
+    }
+
     public function index()
 {
     $karyawan = auth()->user()->karyawan;
@@ -47,32 +67,10 @@ class DisposisiController extends Controller
 
     $surat = SuratMasuk::findOrFail($suratMasukId);
 
-    // ===============================
-    // LOGIKA TUJUAN DISPOSISI
-    // ===============================
+    $karyawans = $this->recipientsFor($karyawanLogin);
 
-    if ($karyawanLogin->role === 'admin') {
-    // admin → semua kecuali diri sendiri
-    $karyawans = Karyawan::where('id_karyawan', '!=', $karyawanLogin->id_karyawan)->get();
-}
-elseif ($karyawanLogin->role === 'pimpinan') {
-    // pimpinan → pimpinan lain + staff
-    $karyawans = Karyawan::whereIn('role', ['pimpinan', 'user'])
-        ->where('id_karyawan', '!=', $karyawanLogin->id_karyawan)
-        ->get();
-}
-elseif ($karyawanLogin->role === 'user') {
-    // staff → staff lain
-    $karyawans = Karyawan::where('role', 'user')
-        ->where('id_karyawan', '!=', $karyawanLogin->id_karyawan)
-        ->get();
-}
-else {
-    abort(403);
-}
     return view('disposisi.create', compact('surat', 'karyawans'));
 }
-
 
 
     /**
@@ -84,9 +82,7 @@ else {
 {
     $karyawan = auth()->user()->karyawan;
 
-    if (!$karyawan) {
-        abort(403);
-    }
+    if (!$karyawan) abort(403);
 
     $request->validate([
         'surat_masuk_id' => 'required|exists:surat_masuks,id',
@@ -96,17 +92,10 @@ else {
 
     $tujuan = Karyawan::findOrFail($request->ke_karyawan_id);
 
-    // admin bebas
-    if ($karyawan->role === 'admin') {
-        // do nothing
-    }
-    // pimpinan tidak boleh ke admin
-    elseif ($karyawan->role === 'pimpinan' && $tujuan->role === 'admin') {
-        abort(403);
-    }
-    // staff hanya ke staff
-    elseif ($karyawan->role === 'user' && $tujuan->role !== 'user') {
-        abort(403);
+    $allowed = $this->allowedRecipientRoles($karyawan->role_fix);
+
+    if (!in_array($tujuan->role_fix, $allowed)) {
+        abort(403, 'Tidak boleh disposisi ke role tersebut');
     }
 
     Disposisi::create([
@@ -124,32 +113,22 @@ else {
 
 
 
+
     public function forward($id)
 {
-    $karyawan = auth()->user()->karyawan;
+    $karyawanLogin = auth()->user()->karyawan;
 
-    if (!$karyawan) {
+    if (!$karyawanLogin) {
         abort(403);
     }
 
     $disposisi = Disposisi::findOrFail($id);
 
-    if ($karyawan->role === 'admin') {
-        $karyawans = Karyawan::where('id_karyawan', '!=', $karyawan->id_karyawan)->get();
-    }
-    elseif ($karyawan->role === 'pimpinan') {
-        $karyawans = Karyawan::whereIn('role', ['pimpinan', 'user'])
-            ->where('id_karyawan', '!=', $karyawan->id_karyawan)
-            ->get();
-    }
-    else { // staff
-        $karyawans = Karyawan::where('role', 'user')
-            ->where('id_karyawan', '!=', $karyawan->id_karyawan)
-            ->get();
-    }
+    $karyawans = $this->recipientsFor($karyawanLogin);
 
     return view('disposisi.forward', compact('disposisi', 'karyawans'));
 }
+
 
 
     /**

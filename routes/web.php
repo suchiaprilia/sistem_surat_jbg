@@ -15,6 +15,8 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Disposisi;
+use App\Models\SuratMasuk;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,26 +106,23 @@ Route::middleware('auth')->group(function () {
     ->name('disposisi.')
     ->group(function () {
 
-        Route::get('/', [DisposisiController::class, 'index'])
-            ->name('index');
+        Route::get('/', [DisposisiController::class, 'index'])->name('index');
 
-        Route::get('/{disposisi}/teruskan', [DisposisiController::class, 'forward'])
-            ->name('teruskan');
+        Route::get('/{disposisi}/teruskan', [DisposisiController::class, 'forward'])->name('teruskan');
+        Route::post('/{disposisi}/dibaca', [DisposisiController::class, 'markRead'])->name('dibaca');
+        Route::post('/{disposisi}/selesai', [DisposisiController::class, 'markDone'])->name('selesai');
 
-        Route::post('/{disposisi}/dibaca', [DisposisiController::class, 'markRead'])
-            ->name('dibaca');
+        // ✅ CREATE dari Surat Masuk: hanya ADMIN
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/create/{suratMasuk}', [DisposisiController::class, 'create'])->name('create');
+        });
 
-        Route::post('/{disposisi}/selesai', [DisposisiController::class, 'markDone'])
-            ->name('selesai');
-
-        Route::middleware('role:admin,pimpinan')->group(function () {
-            Route::get('/create/{suratMasuk}', [DisposisiController::class, 'create'])
-                ->name('create');
-
-            Route::post('/', [DisposisiController::class, 'store'])
-                ->name('store');
+        // ✅ STORE: boleh admin/pimpinan/staff (karena forward juga butuh store)
+        Route::middleware('role:admin,pimpinan,staff')->group(function () {
+            Route::post('/', [DisposisiController::class, 'store'])->name('store');
         });
     });
+
 
 
     /*
@@ -151,14 +150,22 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/ajax/notifikasi', function () {
-    $karyawanId = 1; // kalau belum ada login, pake 1 dulu
+    $user = auth()->user();
+    $karyawan = $user?->karyawan;
 
-    $disposisiBaru = \App\Models\Disposisi::where('ke_karyawan_id', $karyawanId)
-        ->where('status', 'baru')
-        ->count();
+    $disposisiBaru = 0;
+    if ($karyawan) {
+        $disposisiBaru = Disposisi::where('ke_karyawan_id', $karyawan->id_karyawan)
+            ->where('status', 'baru')
+            ->count();
+    }
+
+    // surat masuk baru (kalau kamu memang pakai)
+    $suratMasukBaru = 0; // isi sesuai sistemmu kalau ada
 
     return response()->json([
-        'total' => $disposisiBaru,
-        'disposisi' => $disposisiBaru,
+        'surat_masuk' => $suratMasukBaru,
+        'disposisi'   => $disposisiBaru,
+        'total'       => $suratMasukBaru + $disposisiBaru,
     ]);
 })->name('ajax.notifikasi');
