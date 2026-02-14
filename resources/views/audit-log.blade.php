@@ -3,6 +3,7 @@
 @section('title', 'Audit Log')
 
 @section('content')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
 <div class="page-header">
     <div class="page-block">
         <div class="row align-items-center">
@@ -85,7 +86,8 @@
 
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover table-striped mb-0">
+            <table id="auditLogTable" class="table table-hover table-striped mb-0">
+
                 <thead>
                     <tr>
                         <th>#</th>
@@ -124,8 +126,29 @@
         </div>
     </div>
 
-    <div class="card-footer">
+    {{-- <div class="card-footer">
         {{ $logs->links() }}
-    </div>
+    </div> --}}
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(function () {
+    $('#auditLogTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        order: [[1, 'desc']], // kolom Waktu
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data",
+            zeroRecords: "Data tidak ditemukan",
+            paginate: { next: "Next", previous: "Prev" }
+        }
+    });
+});
+</script>
 @endsection

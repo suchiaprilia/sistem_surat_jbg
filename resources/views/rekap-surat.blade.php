@@ -128,22 +128,22 @@
 <div class="row mb-4">
     <div class="col-md-4">
         <div class="card summary-card bg-blue">
-            <p>Total Surat Masuk</p>
-            <h3>{{ $totalMasuk }}</h3>
+            <p style="padding-left: 15px;padding-top: 15px;">Total Surat Masuk</p>
+            <h3 style="text-align: center">{{ $totalMasuk }}</h3>
         </div>
     </div>
 
     <div class="col-md-4">
         <div class="card summary-card bg-green">
-            <p>Total Surat Keluar</p>
-            <h3>{{ $totalKeluar }}</h3>
+            <p style="padding-left: 15px;padding-top: 15px;">Total Surat Keluar</p>
+            <h3 style="text-align: center">{{ $totalKeluar }}</h3>
         </div>
     </div>
 
     <div class="col-md-4">
         <div class="card summary-card bg-orange">
-            <p>Total Semua Surat</p>
-            <h3>{{ $totalSurat }}</h3>
+            <p style="padding-left: 15px;padding-top: 15px;">Total Semua Surat</p>
+            <h3 style="text-align: center">{{ $totalSurat }}</h3>
         </div>
     </div>
 </div>
