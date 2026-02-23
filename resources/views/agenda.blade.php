@@ -76,7 +76,7 @@
                                 <th>Selesai</th>
                                 <th>Lokasi</th>
                                 <th>Status</th>
-                                <th class="text-nowrap">Aksi</th>
+                              @if(session('role')=='admin')    <th class="text-nowrap">Aksi</th> @endif
                             </tr>
                         </thead>
 
@@ -101,7 +101,7 @@
                                             <span class="badge bg-secondary">Terjadwal</span>
                                         @endif
                                     </td>
-
+  @if(session('role')=='admin')
                                     {{-- Aksi: titik 3 --}}
                                     <td class="text-nowrap">
                                         <div class="dropdown position-static">
@@ -137,7 +137,7 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                    </td>
+                                    </td>@endif
                                 </tr>
                             @empty
                                 <tr>

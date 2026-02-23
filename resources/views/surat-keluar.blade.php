@@ -48,7 +48,7 @@
                                 <th>Requested By</th>
                                 <th>Signed By</th>
                                 <th style="width:120px;">File</th>
-                                <th style="width:90px;">Aksi</th>
+                    @if(session('role')=='admin')            <th style="width:90px;">Aksi</th> @endif
                             </tr>
                         </thead>
 
@@ -74,7 +74,7 @@
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>
-
+    @if(session('role')=='admin')
                                     <td class="text-nowrap">
                                         <div class="dropdown position-static">
                                             <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
@@ -116,7 +116,7 @@
                                             </ul>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr> @endif
                             @empty
                                 <tr>
                                     <td colspan="9" class="text-center text-muted py-3">Belum ada surat keluar.</td>

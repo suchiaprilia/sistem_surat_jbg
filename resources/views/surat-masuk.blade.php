@@ -52,7 +52,7 @@
                                 <th>Tujuan</th>
                                 <th>Jenis</th>
                                 <th>File Surat</th>
-                                <th class="text-nowrap">Aksi</th>
+                             @if(session('role')=='admin')   <th class="text-nowrap">Aksi</th> @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -82,6 +82,7 @@
 
 
                                     {{-- Aksi dropdown --}}
+                                    @if(session('role')=='admin')
                                     <td class="text-nowrap">
                                         <div class="dropdown position-static">
                                             <button class="btn btn-sm btn-light border dropdown-toggle"
@@ -94,6 +95,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 {{-- Edit --}}
                                                 <li>
+
                                                     <button
                                                         class="dropdown-item btn-edit"
                                                         type="button"
@@ -107,6 +109,7 @@
                                                         data-tujuan="{{ $item->tujuan }}"
                                                         data-jenis-id="{{ $item->id_jenis_surat }}">
                                                         ✏️ Edit
+
                                                     </button>
                                                 </li>
 
@@ -131,6 +134,7 @@
                                                             🗑 Hapus
                                                         </button>
                                                     </form>
+                                                    @endif
                                                 </li>
                                             </ul>
                                         </div>

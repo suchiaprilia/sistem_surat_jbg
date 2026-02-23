@@ -131,25 +131,6 @@
                         </a>
                     </li>
 
-                    <li class="pc-item pc-caption">
-                        <label>Pages</label>
-                        <i class="ph ph-devices"></i>
-                    </li>
-
-                    <li class="pc-item">
-                        <a href="/gradient/pages/login-v1.html" target="_blank" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-lock"></i></span>
-                            <span class="pc-mtext">Login</span>
-                        </a>
-                    </li>
-
-                    <li class="pc-item">
-                        <a href="/gradient/pages/register-v1.html" target="_blank" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
-                            <span class="pc-mtext">Register</span>
-                        </a>
-                    </li>
-
                 </ul>
             </div>
         </div>

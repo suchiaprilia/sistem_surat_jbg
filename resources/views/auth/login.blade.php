@@ -126,7 +126,7 @@
                                     <input class="form-check-input input-primary" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} />
                                     <label class="form-check-label text-muted" for="remember">Remember me?</label>
                                 </div>
-                                <a href="#" class="text-muted">Forgot Password?</a>
+                            
                             </div>
 
                             <div class="d-grid mt-4">

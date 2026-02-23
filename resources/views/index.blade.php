@@ -193,7 +193,7 @@
             </div>
         </div>
     </div>
-
+   @if(in_array(session('role'), ['admin', 'pimpinan']))
     {{-- ✅ TABEL AUDIT LOG TERBARU --}}
     <div class="col-sm-12">
         <div class="card table-card">
@@ -245,7 +245,7 @@
             </div>
         </div>
     </div>
-
+@endif
 </div>
 <!-- [ Main Content ] end -->
 
